@@ -9,17 +9,21 @@
 <body>
     <div class="background-img mix-white">
     </div>
-    <form class="form" action="/login" method="post">
+    <form class="form" action="/register" method="post">
         @csrf
         <div class="side">
             <img src="{{ url('assets/img/form-fill.jpg') }}">
         </div>
         <div class="content">
             <div class="box title">
-                <h2>Login Akun</h2>
-                @if (session('action_message') == 'login_fail')
-                    <p class="message error">Username atau password salah.</p>
+                <h2>Register Akun</h2>
+                @if (session('action_message') == 'register_fail')
+                    <p class="message error">Gagal Registrasi.</p>
                 @endif
+            </div>
+            <div class="box">
+                <label for="phone">Phone:</label><br>
+                <input type="text" id="phone" name="phone" required>
             </div>
             <div class="box">
                 <label for="username">Username:</label><br>
@@ -30,10 +34,10 @@
                 <input type="password" id="password" name="password" required>
             </div>
             <div class="box">
-                <input type="submit" class="button primary" name="login" value="Login">
+                <input type="submit" class="button primary" name="register" value="Register">
             </div>
             <div class="box">
-                <label for="register">Tidak punya akun? <a href="{{ url('/register') }}">Daftar disini</a></label>
+                <label for="register">Sudah punya akun? <a href="{{ url('/login') }}">Masuk disini</a></label>
             </div>
         </div>
     </form>

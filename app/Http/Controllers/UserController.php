@@ -6,8 +6,12 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    function index() {
+    function webLogin() {
         return view('login');
+    }
+
+    function webRegister() {
+        return view('register');
     }
 
     function login(Request $request) {

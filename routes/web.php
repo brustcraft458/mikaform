@@ -20,7 +20,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', fn() => redirect()->route('login'));
 Route::get('/form/template', [FormTemplateController::class, 'index'])->name('form_template');
 Route::get('/form/data/{uuid}', [FormDataController::class, 'index'])->name('form_data');
-Route::get('/login', [UserController::class, 'index'])->name('login');
+Route::get('/login', [UserController::class, 'webLogin'])->name('login');
+Route::get('/register', [UserController::class, 'webRegister'])->name('register');
 
 // Post
 Route::post('/form/template', [FormTemplateController::class, 'store']);
