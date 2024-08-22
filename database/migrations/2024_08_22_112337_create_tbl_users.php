@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('tbl_users', function (Blueprint $table) {
             $table->id();
-            $table->string('email',50);
+            $table->string('phone');
             $table->string('username');
-            $table->string("password");
+            $table->string('password');
             $table->enum('role', ['admin', 'member']);
+            $table->timestamp('verified_at')->nullable(); // Adding the verified_at column
             $table->timestamps();
         });
     }

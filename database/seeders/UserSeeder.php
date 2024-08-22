@@ -15,9 +15,11 @@ class UserSeeder extends Seeder
     {
         User::firstOrCreate([
             'username' => 'adminuser',
-            'email' => 'admin@example.com',
-            'password' => 'admin123',
-            'role' => 'admin'
+            'phone' => '0812345678'
+        ], [
+            'password' => bcrypt('admin123'),
+            'role' => 'admin',
+            'verified_at'=> now()
         ]);
     }
 }
