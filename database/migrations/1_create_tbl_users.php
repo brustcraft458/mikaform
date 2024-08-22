@@ -16,8 +16,10 @@ return new class extends Migration
             $table->string('phone');
             $table->string('username');
             $table->string('password');
-            $table->enum('role', ['admin', 'member']);
+            $table->enum('role', ['admin', 'member','super admin'])->default('member');
+            $table->boolean('admin_request')->default(false); //buat user ngajuin jadi administrator
             $table->timestamp('verified_at')->nullable(); // Adding the verified_at column
+            $table->string('otp')->nullable(); 
             $table->timestamps();
         });
     }
