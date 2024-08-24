@@ -9,7 +9,7 @@
 <body>
     <div class="background-img mix-white">
     </div>
-    <form class="form" action="/register" method="post">
+    <form class="form" action="{{ route('register-post') }}" method="post">
         @csrf
         <div class="side">
             <img src="{{ url('assets/img/form-fill.jpg') }}">
@@ -37,9 +37,17 @@
                 <input type="submit" class="button primary" name="register" value="Register">
             </div>
             <div class="box">
-                <label for="register">Sudah punya akun? <a href="{{ url('/login') }}">Masuk disini</a></label>
+                <label for="register">Sudah punya akun? <a href="{{ url('/') }}">Masuk disini</a></label>
             </div>
         </div>
     </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            @if (session('success'))
+                alert("{{ session('success') }}");
+            @endif
+        });
+    </script>
 </body>
 </html>

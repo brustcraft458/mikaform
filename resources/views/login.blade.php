@@ -9,7 +9,7 @@
 <body>
     <div class="background-img mix-white">
     </div>
-    <form class="form" action="/login" method="post">
+    <form class="form" action="{{ route('login') }}" method="post">
         @csrf
         <div class="side">
             <img src="{{ url('assets/img/form-fill.jpg') }}">
@@ -37,5 +37,13 @@
             </div>
         </div>
     </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            @if (session('success'))
+                alert("{{ session('success') }}");
+            @endif
+        });
+    </script>
 </body>
 </html>

@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('phone');
             $table->string('username');
             $table->string('password');
-            $table->enum('role', ['admin', 'member']);
-            $table->timestamp('verified_at')->nullable(); // Adding the verified_at column
+            $table->enum('role', ['admin', 'member','super_admin'])->default('member');
+            $table->timestamp('verified_at')->nullable();
+            $table->string('otp')->nullable();
             $table->timestamps();
         });
     }
