@@ -42,8 +42,8 @@ class RegisterController extends Controller
     
         // Kirim OTP melalui API bot WhatsApp dengan menyertakan token Bearer
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5Y2Q0NDE1Mi1iYTNmLTQ3YTEtYjU4Ni0zZjAwMmM0ZjEzMTMiLCJuYW1lIjoiYmlzd2EiLCJpYXQiOjE3MjQzNTQ0MjksImV4cCI6MTc1NTg5MDQyOX0.AhJftxPmNg3E7GY55QxWjwZelJG0IML_SscmQdGqEQc'
-        ])->post('https://wa-server.muhsalfazi.my.id/api/messages', [
+            'Authorization' => env('KEY_WA')
+        ])->post(env('URL_WA'), [
             'phone' => $user->phone,
             'text' => 'Your OTP code is: ' . $otp,
             'customer' => [
