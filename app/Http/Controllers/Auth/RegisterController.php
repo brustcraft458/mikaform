@@ -41,14 +41,12 @@ class RegisterController extends Controller
         ]);
 
         // Kirim OTP melalui API bot WhatsApp dengan menyertakan token Bearer
+        $waurl = env('WA_GATEWAY_URL') . '/api' . '/messages';
         $response = Http::withHeaders([
             'Authorization' => env('WA_GATEWAY_KEY')
-        ])->post(env('WA_GATEWAY_URL') . '/api' . '/', [
+        ])->post($waurl, [
             'phone' => $user->phone,
-            'text' => 'Your OTP code is: ' . $otp,
-            'customer' => [
-                'id' => $user->id
-            ]
+            'text' => 'Your OTP code is: ' . $otp
         ]);
 
         // Cek respons dari API bot WhatsApp
