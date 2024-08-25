@@ -13,24 +13,58 @@ class RegisterController extends Controller
 {
     public function webRegister()
     {
+        if (!session()->has('register_step') || session('register_step') == '') {
+            session()->put('register_step', 'page_1');
+        }
         return view('register');
     }
 
-    public function register(Request $request)
+    public function handleRegister(Request $request) {
+        // Clear
+        session()->forget('action_message');
+
+        // Proccess
+        if ($request->has('register_1')) {
+            return $this->registerUser($request);
+        } elseif ($request->has('register_2_otp')) {
+            return $this->verifyOTP($request);
+        }
+
+        return response()->json($request->all());
+    }
+
+    public function registerUser(Request $request)
     {
         // Validasi input
         $validator = Validator::make($request->all(), [
-            'phone' => 'required|unique:tbl_users,phone|numeric',
+            'phone' => 'required|numeric',
             'username' => 'required',
             'password' => 'required|min:8',
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            session()->put('action_message', 'register_fail');
+            return redirect()->route('register');
         }
 
         // Generate OTP
         $otp = rand(100000, 999999);
+
+        // Cari
+        $foundUser = User::where('username', $request->username)->first();
+        if ($foundUser) {
+            if (is_null($foundUser->verified_at)) {
+                // Temp User
+                $foundUser->delete();
+            } else {
+                // Clear
+                session()->flush();
+                session()->regenerate();
+
+                session()->put('action_message', 'register_fail_user_exists');
+                return redirect()->route('register');
+            }
+        }
 
         // Buat pengguna baru
         $user = User::create([
@@ -51,18 +85,46 @@ class RegisterController extends Controller
 
         // Cek respons dari API bot WhatsApp
         if ($response->successful()) {
-            $responseData = $response->json();
-
-            // Pastikan kunci 'data' dan 'status' ada di dalam respons
-            if (isset($responseData['data']['status']) && !in_array($responseData['data']['status'], ['pending', 'sending', 'success', 'failed'])) {
-                return redirect()->back()->with('alert', 'Send Kode otp: ' . $responseData['data']['status']);
-            }
-
-            // Redirect ke halaman OTP jika berhasil
-            return redirect()->route('otp.verify')->with('alert', 'OTP has been sent to your phone.');
+            session()->put('register_cache_user_id', $user->id);
+            session()->put('register_step', 'page_2_otp');
+            
+            return redirect()->route('register');
         } else {
-            // Tampilkan alert jika gagal mengirim OTP via WhatsApp
-            return redirect()->back()->with('alert', 'Failed to send OTP via WhatsApp.');
+            return response()->json(['info' => 'wa gateaway error']);
+        }
+    }
+
+    public function verifyOTP(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'otp' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Get user by ID
+        $user_id = session('register_cache_user_id');
+        $user = User::find($user_id);
+
+        // Clear
+        session()->flush();
+        session()->regenerate();
+
+        // Check if OTP matches
+        if ($user->otp === $request->otp) {
+            // Update user's verified_at and clear OTP
+            $user->update([
+                'verified_at' => now(),
+                'otp' => null,
+            ]);
+
+            
+            session()->put('action_message', 'register_success');
+            return redirect()->route('form_template');
+        } else {
+            session()->put('action_message', 'register_fail');
+            return redirect()->route('register');
         }
     }
 

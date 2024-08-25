@@ -23,13 +23,16 @@ class LoginController extends Controller
         $user = User::where('username', $request->username)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
+            session()->flash('action_message', 'login_fail');
+            return redirect()->route('login');
         }
 
         // Regenerate session to prevent session fixation attacks
-        $request->session()->regenerate();
+        session()->flush();
+        session()->regenerate();
 
-        return response()->json(['message' => 'Login successful', 'user' => $user]);
+        session()->flash('action_message', 'login_success');
+        return redirect()->route('form_template');
     }
 
     public function logout(Request $request)

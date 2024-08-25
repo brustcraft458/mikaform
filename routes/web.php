@@ -18,16 +18,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 // login_view+post
-Route::get('/', [LoginController::class, 'webLogin'])->name('login');
+Route::get('/', fn () => redirect('/login'));
+Route::get('/login', [LoginController::class, 'webLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
 // ====
 
 //register_view+post
 Route::get('/register', [RegisterController::class, 'webRegister'])->name('register');
-Route::post('/register', [RegisterController::class, 'register'])->name('register-post');
+Route::post('/register', [RegisterController::class, 'handleRegister']);
 
-
-// ====
-Route::get('/otp', [OTPVerificationController::class, 'showVerificationForm'])->name('otp.verify');
-Route::post('/otp/verify', [OTPVerificationController::class, 'verifyOTP']);
+//
+Route::get('/form/template', fn () => view('form.template'))->name('form_template');
