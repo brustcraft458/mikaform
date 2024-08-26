@@ -20,9 +20,6 @@ class RegisterController extends Controller
     }
 
     public function handleRegister(Request $request) {
-        // Clear
-        session()->forget('action_message');
-
         // Proccess
         if ($request->has('register_1')) {
             return $this->registerUser($request);
@@ -43,7 +40,7 @@ class RegisterController extends Controller
         ]);
 
         if ($validator->fails()) {
-            session()->put('action_message', 'register_fail');
+            session()->flash('action_message', 'register_fail');
             return redirect()->route('register');
         }
 
@@ -51,8 +48,12 @@ class RegisterController extends Controller
         $otp = rand(100000, 999999);
 
         // Cari
-        $foundUser = User::where('username', $request->username)->first();
-        if ($foundUser) {
+        $foundByUsername = User::where('username', $request->username)->first();
+        $foundByPhone = User::where('phone', $request->phone)->first();
+            
+        if ($foundByUsername || $foundByPhone) {
+            $foundUser = $foundByUsername ?: $foundByPhone;
+        
             if (is_null($foundUser->verified_at)) {
                 // Temp User
                 $foundUser->delete();
@@ -60,11 +61,15 @@ class RegisterController extends Controller
                 // Clear
                 session()->flush();
                 session()->regenerate();
-
-                session()->put('action_message', 'register_fail_user_exists');
+            
+                // Determine action message
+                $actionMessage = $foundByUsername ? 'register_fail_user_exists' : 'register_fail_phone_exists';
+                session()->flash('action_message', $actionMessage);
+            
                 return redirect()->route('register');
             }
         }
+
 
         // Buat pengguna baru
         $user = User::create([
@@ -120,10 +125,10 @@ class RegisterController extends Controller
             ]);
 
             
-            session()->put('action_message', 'register_success');
+            session()->flash('action_message', 'register_success');
             return redirect()->route('form_template');
         } else {
-            session()->put('action_message', 'register_fail');
+            session()->flash('action_message', 'register_fail');
             return redirect()->route('register');
         }
     }
