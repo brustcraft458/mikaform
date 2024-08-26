@@ -29,4 +29,5 @@ Route::get('/register', [RegisterController::class, 'webRegister'])->name('regis
 Route::post('/register', [RegisterController::class, 'handleRegister']);
 
 //
-Route::get('/form/template', fn () => view('form.template'))->name('form_template');
+Route::get('/form/template', [FormTemplateController::class, 'index'])->name('form_template');
+Route::post('/form/template', [FormTemplateController::class, 'store']);
