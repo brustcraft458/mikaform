@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\FormDataController;
 use App\Http\Controllers\FormTemplateController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\OTPVerificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,14 +17,16 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+// login_view+post
+Route::get('/', fn () => redirect('/login'));
+Route::get('/login', [LoginController::class, 'webLogin'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
+// ====
 
-// Get
-Route::get('/', fn() => redirect()->route('login'));
-Route::get('/form/template', [FormTemplateController::class, 'index'])->name('form_template');
-Route::get('/form/data/{uuid}', [FormDataController::class, 'index'])->name('form_data');
-Route::get('/login', [UserController::class, 'webLogin'])->name('login');
-Route::get('/register', [UserController::class, 'webRegister'])->name('register');
+//register_view+post
+Route::get('/register', [RegisterController::class, 'webRegister'])->name('register');
+Route::post('/register', [RegisterController::class, 'handleRegister']);
 
-// Post
-Route::post('/form/template', [FormTemplateController::class, 'store']);
-Route::post('/login', [UserController::class, 'login']);
+//
+Route::get('/form/template', fn () => view('form.template'))->name('form_template');
