@@ -8,7 +8,7 @@
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
         <li class="nav-item">
-            <a href="{{ url('/form/template') }}" class="nav-link active" aria-current="page">
+            <a href="{{ url('/form/template') }}" class="nav-link {{ ($selected == 'form_template') ? 'active' : 'text-white'}}" aria-current="page">
                 <i class="icon"></i>
                 Formulir
             </a>
