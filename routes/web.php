@@ -31,3 +31,7 @@ Route::post('/register', [RegisterController::class, 'handleRegister']);
 //
 Route::get('/form/template', [FormTemplateController::class, 'index'])->name('form_template');
 Route::post('/form/template', [FormTemplateController::class, 'store']);
+
+// share
+Route::get('/form/share/{uuid}', [FormDataController::class, 'webShare'])->name('form_share');
+Route::post('/form/share/{uuid}', [FormDataController::class, 'userInput']);

@@ -45,7 +45,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($form_list as $no => $form)
+                            @foreach ($form_list as $form)
                                 <tr>
                                     <td>
                                         <a href="/form/data/{{ $form['uuid'] }}" class="item-href">{{ $form['title'] }}</a>
@@ -54,9 +54,9 @@
                                         {{ $form['total_viewed'] }} <i class="bi {{ ($form == 'public') ? 'bi-people' : 'bi-lock' }}"></i> <i style="opacity: 0">ii</i> {{ $form['total_respondent'] }} <i class="bi bi-database-down"></i></i>
                                     </td>
                                     <td>
-                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#share-data-{{ $no }}"><i class="bi bi-share"></i></button>
-                                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#edit-data-{{ $no }}"><i class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-data-{{ $no }}"><i class="bi bi-trash"></i></button>
+                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#share-data-{{ $form['uuid'] }}"><i class="bi bi-share"></i></button>
+                                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#edit-data-{{ $form['uuid'] }}"><i class="bi bi-pencil"></i></button>
+                                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-data-{{ $form['uuid'] }}"><i class="bi bi-trash"></i></button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -67,9 +67,32 @@
 
                 
                 <div>
-                        <!-- Modal Edit -->
+                    @foreach ($form_list as $form)
+                        <!-- Modal Share -->
+                        <div class="modal fade" id="share-data-{{ $form['uuid'] }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title rounded" id="form-add-title">Bagikan</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div>
+                                        <div class="modal-body">
+                                            <div class="form-group my-3">
+                                                <button type="button" class="btn btn-outline-primary" onclick="copyToClipboard(`{{ url('/form/share/') }}/{{ $form['uuid'] }}`)">Copy Link</button>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
+
+                        <!-- Modal Edit -->
                         <!-- Modal Hapus -->
+                    @endforeach
                 </div>
 
                 <div class="card-footer py-2">

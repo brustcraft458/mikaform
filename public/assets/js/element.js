@@ -216,14 +216,30 @@ class ElementFormItem {
 }
 
 // Assign
-document.querySelectorAll(".edit-text").forEach(element => {
-    new ElementEditText(element)
-})
-document.querySelectorAll(".form-data-template").forEach(element => {
-    new ElementForm(element)
-})
+const queryEditText = document.querySelectorAll(".edit-text");
+if (queryEditText) {
+    queryEditText.forEach(element => {
+        new ElementEditText(element);
+    });
+}
+
+const queryFormTemplate = document.querySelectorAll(".form-data-template");
+if (queryFormTemplate) {
+    queryFormTemplate.forEach(element => {
+        new ElementForm(element);
+    });
+}
+
 
 function generateIncrementNumber() {
     globalCounter += 1
     return globalCounter
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        alert('Text telah disalin');
+    }).catch(function(err) {
+        console.error('Error copying text: ', err);
+    });
 }
