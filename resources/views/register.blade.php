@@ -20,7 +20,9 @@
                 @if (session('action_message') == 'register_fail')
                     <p class="message error">Gagal Registrasi.</p>
                 @elseif (session('action_message') == 'register_fail_user_exists')
-                    <p class="message error">Gagal Registrasi dikarenakan username sama.</p>
+                    <p class="message error">Username Tidak Boleh Sama.</p>
+                @elseif (session('action_message') == 'register_fail_phone_exists')
+                    <p class="message error">Nomor HP Sudah digunakan</p>
                 @endif
             </div>
 
