@@ -13,7 +13,7 @@
     </main>
 
     <!-- Form Modal -->
-    <div class="modal fade" id="form-share" tabindex="-1">
+    <div class="modal fade form-data-share" id="form-share" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -34,15 +34,19 @@
                                         <div class="d-flex flex-row gap-1">
                                             <label class="col-form-label rounded" id="form-share-{{$section['id']}}-label">{{ $section['label'] }}</label>
                                         </div>
-                                        <div class="d-flex flex-row gap-2">
-                                            <input type="file" class="form-control" id="form-share-{{$section['id']}}-input" name="form-input-{{$section['id']}}" value="">
-                                        </div>
                                     @else
                                         <div class="d-flex flex-row gap-1">
                                             <label class="col-form-label rounded" id="form-share-{{$section['id']}}-label">{{ $section['label'] }}</label>
                                         </div>
+                                    @endif
+
+                                    @if ($section['type'] == 'file' || $section['type'] == 'payment')
                                         <div class="d-flex flex-row gap-2">
-                                            <input type="{{ $section['type'] }}" class="form-control" id="form-share-{{$section['id']}}-input" name="form-input-{{$section['id']}}" value="">
+                                            <input type="file" class="form-control" id="form-share-{{$section['id']}}-input" name="form-share-{{$section['id']}}-input" value="">
+                                        </div>
+                                    @else
+                                        <div class="d-flex flex-row gap-2">
+                                            <input type="{{ $section['type'] }}" class="form-control" id="form-share-{{$section['id']}}-input" value="">
                                         </div>
                                     @endif
                                 </div>
@@ -53,7 +57,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="form-share-button-reset">Reset</button>
-                        <button type="submit" class="btn btn-primary" id="form-share-button-submit">Daftar</button>
+                        <button type="button" class="btn btn-primary" id="form-share-button-submit">Daftar</button>
                     </div>
                 </form>
             </div>

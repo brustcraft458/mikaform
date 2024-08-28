@@ -23,12 +23,17 @@ class ElementEditText {
 
 // Form
 class ElementForm {
-    constructor(element) {
+    constructor(element, option = {isUserInput: false}) {
         this.elmRoot = element
+        this.option = option
         this.fname = element.getAttribute('id')
         this.elmChildItem = element.querySelector(`#${this.fname}-section`)
-        this.btnAddItem = element.querySelector(`#${this.fname}-button-add`)
         this.btnSubmit = element.querySelector(`#${this.fname}-button-submit`)
+
+        if (!this.option.isUserInput) {
+            this.btnAddItem = element.querySelector(`#${this.fname}-button-add`)
+        }
+
         this.memItemList = []
 
         this.init()
@@ -36,13 +41,15 @@ class ElementForm {
 
     init() {
         // Add Item
-        this.btnAddItem.addEventListener("click", () => {
-            this.onButtonAddItem()
-        })
+        if (!this.option.isUserInput) {
+            this.btnAddItem.addEventListener("click", () => {
+                this.onButtonAddItem()
+            })
+        }
 
         // Item Children
         for (const child of this.elmChildItem.children) {
-            this.memItemList.push(new ElementFormItem(child))
+            this.memItemList.push(new ElementFormItem(child, this.option))
         }
 
         // Submit Form
@@ -86,7 +93,7 @@ class ElementForm {
         // Assign
         const editText = newElm.querySelector(".edit-text")
         new ElementEditText(editText)
-        this.memItemList.push(new ElementFormItem(newElm))
+        this.memItemList.push(new ElementFormItem(newElm, this.option))
 
         this.elmChildItem.appendChild(newElm)
     }
@@ -119,29 +126,39 @@ class ElementForm {
 }
 
 class ElementFormItem {
-    constructor(element) {
+    constructor(element, option) {
         this.elmMain = element
+        this.option = option
         this.uname = element.getAttribute('id')
         this.elmLabel = element.querySelector(`#${this.uname}-label`)
-        this.elmImage = element.querySelector(`#${this.uname}-image`)
         this.elmInput = element.querySelector(`#${this.uname}-input`)
-        this.elmType = element.querySelector(`#${this.uname}-type`)
-        this.btnDelete = element.querySelector(`#${this.uname}-delete`)
+
+        if (!this.option.isUserInput) {
+            this.elmImage = element.querySelector(`#${this.uname}-image`)
+            this.elmType = element.querySelector(`#${this.uname}-type`)
+            this.btnDelete = element.querySelector(`#${this.uname}-delete`)
+        }
 
         this.init()
     }
 
     init() {
         // Action
-        this.elmType.addEventListener('change', (event) => {
-            this.onInputChange(event.target.value)
-        })
-
-        this.initImage()
-
-        this.btnDelete.addEventListener('click', () => {
-            this.onButtonDelete()
-        })
+        if (!this.option.isUserInput) {
+            this.elmType.addEventListener('change', (event) => {
+                this.onInputChange(event.target.value)
+            })
+    
+            this.initImage()
+    
+            this.btnDelete.addEventListener('click', () => {
+                this.onButtonDelete()
+            })
+        } else {
+            this.elmInput.addEventListener('input', (event) => {
+                this.onInputSanitize(event.target.value)
+            });
+        }
     }
 
     initImage() {
@@ -185,6 +202,19 @@ class ElementFormItem {
         }
     }
 
+    onInputSanitize(input) {
+        let sanitized = ''
+        if (this.elmInput.type == 'text') {
+            sanitized = input.replace(/[^a-zA-Z0-9 ,;]/g, '')
+        } else if (this.elmInput.type == 'number') {
+            sanitized = input.replace(/[^0-9]/g, '')
+        } else {
+            return
+        }
+        
+        this.elmInput.value = sanitized
+    }
+
     onImageChange(file, elmImg) {
         if (file) {
             const reader = new FileReader()
@@ -201,14 +231,34 @@ class ElementFormItem {
     }
 
     toJson() {
-        let newData = {
-            label: this.elmLabel.innerText,
-            type: this.elmType.value
-        }
+        let newData
 
-        const inpImage = this.elmImage.querySelector("input")
-        if (inpImage) {
-            newData['image'] = inpImage.name
+        if (!this.option.isUserInput) {
+            newData = {
+                label: this.elmLabel.innerText,
+                type: this.elmType.value
+            }
+    
+            const inpImage = this.elmImage.querySelector("input")
+            if (inpImage) {
+                newData['image'] = inpImage.name
+            }
+
+        } else {
+            const id = parseInt(this.uname.split('-').pop())
+
+            newData = {
+                id: id,
+                label: this.elmLabel.innerText,
+                type: this.elmInput.type
+            }
+
+            if (newData.type == 'file') {
+                newData['value'] = this.elmInput.name
+            } else {
+                newData['value'] = this.elmInput.value
+            }
+            
         }
 
         return newData
@@ -227,6 +277,13 @@ const queryFormTemplate = document.querySelectorAll(".form-data-template");
 if (queryFormTemplate) {
     queryFormTemplate.forEach(element => {
         new ElementForm(element);
+    });
+}
+
+const queryFormShare = document.querySelectorAll(".form-data-share");
+if (queryFormShare) {
+    queryFormShare.forEach(element => {
+        new ElementForm(element, {isUserInput: true});
     });
 }
 

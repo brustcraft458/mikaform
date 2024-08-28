@@ -30,8 +30,10 @@ class FormDataController extends Controller
     }
 
     function userInput(Request $request) {
-        $result = $request->all();
+        $jsonData = $request->input('json-data');
+        $jsonData = json_decode($jsonData, true);
+        //$result = $request->all();
 
-        return response()->json($result);
+        return response()->json($jsonData);
     }
 }

@@ -28,9 +28,12 @@ Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
 Route::get('/register', [RegisterController::class, 'webRegister'])->name('register');
 Route::post('/register', [RegisterController::class, 'handleRegister']);
 
-//
+// template
 Route::get('/form/template', [FormTemplateController::class, 'index'])->name('form_template');
 Route::post('/form/template', [FormTemplateController::class, 'store']);
+
+// data
+Route::get('/form/data/{uuid}', [FormDataController::class, 'webData'])->name('form_data');
 
 // share
 Route::get('/form/share/{uuid}', [FormDataController::class, 'webShare'])->name('form_share');
