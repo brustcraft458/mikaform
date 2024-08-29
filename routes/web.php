@@ -25,7 +25,7 @@ use App\Http\Controllers\UserProfileController;
 Route::get('/', fn() => redirect('/login'));
 Route::get('/login', [LoginController::class, 'webLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
-Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
+Route::get('/logout', [LoginController::class, 'logout']);
 // ====
 
 // Rute untuk menampilkan form pengiriman OTP
@@ -52,15 +52,12 @@ Route::get('/form/template', [FormTemplateController::class, 'index'])->name('fo
 Route::post('/form/template', [FormTemplateController::class, 'store']);
 
 // kelola show data user
-Route::get('/form/user', [KelolaUserController::class, 'index']);
+Route::get('/user/manage', [KelolaUserController::class, 'index'])->name('user_manage');
 // Route untuk mengubah role user
-Route::post('/kelola-user/ubah-role/{id}', [KelolaUserController::class, 'ubahRole'])->name('kelola-user.ubah-role');
-// Route untuk menghapus user
-Route::delete('/kelola-user/hapus-user/{id}', [KelolaUserController::class, 'hapusUser'])->name('kelola-user.hapus-user');
+Route::post('/user/manage', [KelolaUserController::class, 'handleManage']);
 
 // Show Profile
-Route::get('/profile', [UserProfileController::class, 'show'])->name('profile.show');
-
+Route::get('/profile', [UserProfileController::class, 'show'])->name('profile');
 
 // data
 Route::get('/form/data/{uuid}', [FormDataController::class, 'webData'])->name('form_data');
