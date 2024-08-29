@@ -12,7 +12,7 @@
                 <i class="icon"></i>
                 Formulir
             </a>
-            <a href="#" class="nav-link text-white" aria-current="page">
+            <a href="{{ url('/form/user') }}" class="nav-link text-white" aria-current="page">
                 <i class="icon"></i>
                 Kelola User
             </a>
