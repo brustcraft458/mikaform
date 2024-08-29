@@ -205,7 +205,7 @@ class ElementFormItem {
     onInputSanitize(input) {
         let sanitized = ''
         if (this.elmInput.type == 'text') {
-            sanitized = input.replace(/[^a-zA-Z0-9 ,;]/g, '')
+            sanitized = input.replace(/[^a-zA-Z0-9 ,;.@]/g, '')
         } else if (this.elmInput.type == 'number') {
             sanitized = input.replace(/[^0-9]/g, '')
         } else {

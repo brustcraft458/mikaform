@@ -82,6 +82,24 @@
             }
         }, { once: true });
     </script>
+
+    @if (session('action_message') == 'form_input_success')
+        <script>
+            Swal.fire({
+              title: "Mantap Coy!",
+              html: "Terimakasih Sudah Mendaftar di<br><b>'{{ $title }}'</b>",
+              icon: "success"
+            });
+        </script>
+    @elseif (session('action_message') == 'form_input_failed')
+        <script>
+            Swal.fire({
+              title: "Pendaftaran Gagal!",
+              text: "DEBUG_ID: invalid",
+              icon: "error"
+            });
+        </script>
+    @endif
 </body>
 
 </html>
