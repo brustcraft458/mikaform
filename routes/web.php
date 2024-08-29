@@ -1,4 +1,3 @@
-
 <?php
 
 use App\Http\Controllers\FormDataController;
@@ -9,6 +8,7 @@ use App\Http\Controllers\Auth\OTPVerificationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\KelolaUserController;
+use App\Http\Controllers\UserProfileController;
 
 
 /*
@@ -22,7 +22,7 @@ use App\Http\Controllers\KelolaUserController;
 |
 */
 // login_view+post
-Route::get('/', fn () => redirect('/login'));
+Route::get('/', fn() => redirect('/login'));
 Route::get('/login', [LoginController::class, 'webLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth');
@@ -57,6 +57,10 @@ Route::get('/form/user', [KelolaUserController::class, 'index']);
 Route::post('/kelola-user/ubah-role/{id}', [KelolaUserController::class, 'ubahRole'])->name('kelola-user.ubah-role');
 // Route untuk menghapus user
 Route::delete('/kelola-user/hapus-user/{id}', [KelolaUserController::class, 'hapusUser'])->name('kelola-user.hapus-user');
+
+// Show Profile
+Route::get('/profile', [UserProfileController::class, 'show'])->name('profile.show');
+
 
 // data
 Route::get('/form/data/{uuid}', [FormDataController::class, 'webData'])->name('form_data');
