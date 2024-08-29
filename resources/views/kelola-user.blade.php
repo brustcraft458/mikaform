@@ -8,7 +8,7 @@
 <body>
     <main class="d-flex flex-row">
         <!-- Sidebar -->
-        @include('component.sidebar', ['selected' => 'form_template'])
+        @include('component.sidebar', ['selected' => 'kelola-user'])
 
         <!-- Dashboard -->
         <div class="container-fluid px-5 py-3">
@@ -42,7 +42,8 @@
                                 <th scope="col">Role</th>
                                 <th scope="col">Phone</th>
                                 <th scope="col">Verified At</th>
-                                <th scope="col">Tanngal Buat</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -66,6 +67,13 @@
                                     <td>{{ $user->phone }}</td>
                                     <td>{{ $user->verified_at ? $user->verified_at : 'Not Verified' }}</td>
                                     <td>{{ $user->verified_at ? $user->updated_at : 'Not Verified' }}</td>
+                                    <td>
+                                        <form action="{{ route('kelola-user.hapus-user', $user->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

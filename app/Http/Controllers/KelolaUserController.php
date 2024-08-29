@@ -25,4 +25,11 @@ class KelolaUserController extends Controller
         return redirect()->back()->with('action_message', 'Role berhasil diubah');
     }
 
+    public function hapusUser($id) {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->back()->with('action_message', 'User berhasil dihapus');
+    }
+
 }

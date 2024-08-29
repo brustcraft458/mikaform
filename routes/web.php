@@ -54,6 +54,9 @@ Route::post('/form/template', [FormTemplateController::class, 'store']);
 Route::get('/form/user', [KelolaUserController::class, 'index']);
 // Route untuk mengubah role user
 Route::post('/kelola-user/ubah-role/{id}', [KelolaUserController::class, 'ubahRole'])->name('kelola-user.ubah-role');
+// Route untuk menghapus user
+Route::delete('/kelola-user/hapus-user/{id}', [KelolaUserController::class, 'hapusUser'])->name('kelola-user.hapus-user');
+
 
 // data
 Route::get('/form/data/{uuid}', [FormDataController::class, 'webData'])->name('form_data');
