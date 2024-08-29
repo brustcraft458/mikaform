@@ -45,5 +45,13 @@ Route::post('/new-password', [ForgotPasswordController::class, 'resetPassword'])
 Route::get('/register', [RegisterController::class, 'webRegister'])->name('register');
 Route::post('/register', [RegisterController::class, 'handleRegister']);
 
-//
-Route::get('/form/template', fn () => view('form.template'))->name('form_template');
+// template
+Route::get('/form/template', [FormTemplateController::class, 'index'])->name('form_template');
+Route::post('/form/template', [FormTemplateController::class, 'store']);
+
+// data
+Route::get('/form/data/{uuid}', [FormDataController::class, 'webData'])->name('form_data');
+
+// share
+Route::get('/form/share/{uuid}', [FormDataController::class, 'webShare'])->name('form_share');
+Route::post('/form/share/{uuid}', [FormDataController::class, 'userInput']);
