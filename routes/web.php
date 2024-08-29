@@ -1,3 +1,4 @@
+
 <?php
 
 use App\Http\Controllers\FormDataController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\OTPVerificationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\KelolaUserController;
 
 
 /*
@@ -37,13 +39,29 @@ Route::post('/handle-forgot-password', [ForgotPasswordController::class, 'sendOt
 Route::get('/reset-password', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('reset-password-form');
 
 // Rute POST untuk mengirimkan form reset password (OTP + password baru)
-Route::post('/new-password', [ForgotPasswordController::class, 'resetPassword'])->name('reset-password');
+Route::post('/new-password', [ForgotPasswordController::class, 'resetPasswords'])->name('reset-password');
+
 
 
 //register_view+post
-
 Route::get('/register', [RegisterController::class, 'webRegister'])->name('register');
 Route::post('/register', [RegisterController::class, 'handleRegister']);
 
-//
-Route::get('/form/template', fn () => view('form.template'))->name('form_template');
+// template
+Route::get('/form/template', [FormTemplateController::class, 'index'])->name('form_template');
+Route::post('/form/template', [FormTemplateController::class, 'store']);
+
+// kelola show data user
+Route::get('/form/user', [KelolaUserController::class, 'index']);
+// Route untuk mengubah role user
+Route::post('/kelola-user/ubah-role/{id}', [KelolaUserController::class, 'ubahRole'])->name('kelola-user.ubah-role');
+// Route untuk menghapus user
+Route::delete('/kelola-user/hapus-user/{id}', [KelolaUserController::class, 'hapusUser'])->name('kelola-user.hapus-user');
+
+
+// data
+Route::get('/form/data/{uuid}', [FormDataController::class, 'webData'])->name('form_data');
+
+// share
+Route::get('/form/share/{uuid}', [FormDataController::class, 'webShare'])->name('form_share');
+Route::post('/form/share/{uuid}', [FormDataController::class, 'userInput']);
