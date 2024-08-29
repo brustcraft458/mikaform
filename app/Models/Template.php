@@ -45,6 +45,11 @@ class Template extends Model
                 'section_list' => []
             ];
         }
+        
+        // Update Count
+        $template->increment('total_viewed');
+
+        // Data
         $template = $template->toArray();
 
         // Section

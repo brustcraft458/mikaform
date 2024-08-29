@@ -21,7 +21,7 @@
                         <h5 class="modal-title rounded" id="form-share-title">{{ $title  }}</h5>
                     </div>
                 </div>
-                <form id="form-share" action="{{ url("/form/share/$uuid")}}" method="POST">
+                <form id="form-share" action="{{ url("/form/share/$uuid")}}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div id="form-share-section">

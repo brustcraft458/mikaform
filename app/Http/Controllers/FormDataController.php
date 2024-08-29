@@ -8,6 +8,7 @@ use App\Models\Section;
 use App\Models\Template;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class FormDataController extends Controller
 {
@@ -60,6 +61,9 @@ class FormDataController extends Controller
             return redirect()->route('form_share', ['uuid'=> $uuid]);
         }
 
+        // Update Count
+        $template->increment('total_respondent');
+
         // Get Sections
         foreach ($input['section_list'] as $section) {
             $sectionDB = Section::find($section['id'])->where('id_template', $template['id']);
@@ -73,8 +77,37 @@ class FormDataController extends Controller
         // New Dump
         $dump = Dump::create(['id_template' => $template['id']]);
 
+        // return response()->json($input['section_list']);
+
         // Input Sections
         foreach ($input['section_list'] as $section) {
+            if ($section['type'] == 'file') {
+                // Has File
+                $fileLabel = $section['value'];
+                $file = $request->file($fileLabel);
+
+                // Check
+                $validator = Validator::make([$fileLabel => $file], [
+                    $fileLabel => 'required|file|mimes:jpg,png,pdf,docx|max:2048'
+                ]);
+
+                if ($validator->fails()) {
+                    session()->flash('action_message', 'form_input_failed');
+                    session()->flash('action_data', $validator->errors()->toJson());
+                    return redirect()->route('form_share', ['uuid'=> $uuid]);
+                }
+
+                // File Name
+                $uuid = Str::uuid()->toString();
+                $extension = $file->getClientOriginalExtension(); // Mendapatkan ekstensi file
+                $fileName = $uuid . '.' . $extension;
+
+                // Save File
+                $filePath = $file->storeAs('uploads', $fileName, 'public');
+                $section['value'] = $filePath;
+            }
+
+            // Input
             Data::create([
                 'value' => $section['value'],
                 'id_section' => $section['id'],
