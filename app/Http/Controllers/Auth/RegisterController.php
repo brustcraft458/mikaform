@@ -52,20 +52,32 @@ class RegisterController extends Controller
         $foundByPhone = User::where('phone', $request->phone)->first();
             
         if ($foundByUsername || $foundByPhone) {
-            $foundUser = $foundByUsername ?: $foundByPhone;
-        
-            if (is_null($foundUser->verified_at)) {
-                // Temp User
-                $foundUser->delete();
-            } else {
+            $actionMessage = '';
+
+            // User Check
+            if (isset($foundByUsername)) {
+                if (is_null($foundByUsername->verified_at)) {
+                    $foundByUsername->delete();
+                } else {
+                    $actionMessage = 'register_fail_user_exists';
+                }
+            }
+            
+            if (isset($foundByPhone)) {
+                if (is_null($foundByPhone->verified_at)) {
+                    $foundByPhone->delete();
+                } else {
+                    $actionMessage = 'register_fail_phone_exists';
+                }
+            }            
+
+            if ($actionMessage != '') {
                 // Clear
                 session()->flush();
                 session()->regenerate();
-            
-                // Determine action message
-                $actionMessage = $foundByUsername ? 'register_fail_user_exists' : 'register_fail_phone_exists';
+
+                // Msg
                 session()->flash('action_message', $actionMessage);
-            
                 return redirect()->route('register');
             }
         }
