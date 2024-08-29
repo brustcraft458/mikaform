@@ -19,7 +19,7 @@ class FormTemplateController extends Controller
             'form_list' => $form_list
         ]);
     }
-
+    
     function store(Request $request) {
         $jsonData = $request->input('json-data');
         $jsonData = json_decode($jsonData, true);
