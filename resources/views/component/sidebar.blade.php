@@ -12,7 +12,7 @@
                 <i class="icon"></i>
                 Formulir
             </a>
-            <a href="#" class="nav-link text-white" aria-current="page">
+            <a href="{{ url('/form/user') }}"class="nav-link {{ ($selected == 'kelola-user') ? 'active' : 'text-white'}}" aria-current="page">
                 <i class="icon"></i>
                 Kelola User
             </a>
@@ -26,7 +26,7 @@
             <strong>Username</strong>
         </a>
         <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="{{ route('profile.show') }}">Profile</a></li>
             <li>
                 <hr class="dropdown-divider">
             </li>

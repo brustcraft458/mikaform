@@ -10,7 +10,8 @@ use App\Models\User;
 
 class LoginController extends Controller
 {
-    function webLogin() {
+    function webLogin()
+    {
         return view('login');
     }
     public function login(Request $request)
@@ -30,6 +31,8 @@ class LoginController extends Controller
         // Regenerate session to prevent session fixation attacks
         session()->flush();
         session()->regenerate();
+
+        session()->put('data_user_id', $user->id);
 
         session()->flash('action_message', 'login_success');
         return redirect()->route('form_template');
