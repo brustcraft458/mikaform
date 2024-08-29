@@ -36,7 +36,28 @@ class Template extends Model
     /**
      * Functions
      */
-    public function section_list() {
-        return $this->hasMany(Section::class, 'id_template');
+    static function allSection($uuid_template) {
+        // Get Template
+        $template = Template::where('uuid', $uuid_template)->first();
+        if (!$template) {
+            return [
+                'title' => '',
+                'section_list' => []
+            ];
+        }
+        
+        // Update Count
+        $template->increment('total_viewed');
+
+        // Data
+        $template = $template->toArray();
+
+        // Section
+        $section_list = Section::where('id_template', $template['id'])->get()->toArray();
+
+        return [
+            'title' => $template['title'],
+            'section_list' => $section_list
+        ];
     }
 }

@@ -1,0 +1,23 @@
+/*--------------------------------------------------------------
+# Additional
+--------------------------------------------------------------*/
+.fs-13px {
+    font-size: 13px
+}
+
+.edit-text[contenteditable]:focus {
+    outline: 3px solid #C2DBFE;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.item-href {
+    color: black;
+    text-decoration: none;
+}
+
+.item-href:hover {
+    color: blue;
+}
