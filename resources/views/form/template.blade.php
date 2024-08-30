@@ -128,6 +128,7 @@
                                     <select class="form-control w-50" id="form-add-s1-type">
                                         <option value="text">Text</option>
                                         <option value="number">Number</option>
+                                        <option value="phone">Phone</option>
                                         <option value="file">File</option>
                                         <option value="payment">Payment</option>
                                     </select>

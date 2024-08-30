@@ -82,6 +82,7 @@ class ElementForm {
                     <select class="form-control w-50" id="${uname}-type">
                         <option value="text">Text</option>
                         <option value="number">Number</option>
+                        <option value="phone">Phone</option>
                         <option value="file">File</option>
                         <option value="payment">Payment</option>
                     </select>
@@ -181,9 +182,13 @@ class ElementFormItem {
         if (selected === 'text') {
             this.elmInput.type = "text"
             this.elmInput.value = "Hello Word"
-        } else if (selected === 'number') {
+        } else if (selected === 'number' || selected === 'phone') {
             this.elmInput.type = "number"
-            this.elmInput.value = '1234456789'
+            if (selected === 'phone') {
+                this.elmInput.value = '081234567890'
+            } else {
+                this.elmInput.value = '1234456789'
+            }
         } else if (selected === 'file' || selected == 'payment') {
             this.elmInput.type = "file"
         }

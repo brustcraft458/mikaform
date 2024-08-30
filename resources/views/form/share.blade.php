@@ -44,9 +44,13 @@
                                         <div class="d-flex flex-row gap-2">
                                             <input type="file" class="form-control" id="form-share-{{$section['id']}}-input" name="form-share-{{$section['id']}}-input" value="">
                                         </div>
+                                    @elseif ($section['type'] == 'number' || $section['type'] == 'phone')
+                                        <div class="d-flex flex-row gap-2">
+                                            <input type="number" class="form-control" id="form-share-{{$section['id']}}-input" value="">
+                                        </div>
                                     @else
                                         <div class="d-flex flex-row gap-2">
-                                            <input type="{{ $section['type'] }}" class="form-control" id="form-share-{{$section['id']}}-input" value="">
+                                            <input type="text" class="form-control" id="form-share-{{$section['id']}}-input" value="">
                                         </div>
                                     @endif
                                 </div>
