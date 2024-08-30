@@ -44,12 +44,16 @@ class RegisterController extends Controller
             return redirect()->route('register');
         }
 
+        // Data Validated
+        $input = $validator->validated();
+        $input['phone'] = formatPhone($input['phone']);
+
         // Generate OTP
         $otp = rand(100000, 999999);
 
         // Cari
-        $foundByUsername = User::where('username', $request->username)->first();
-        $foundByPhone = User::where('phone', $request->phone)->first();
+        $foundByUsername = User::where('username', $input['username'])->first();
+        $foundByPhone = User::where('phone', $input['phone'])->first();
             
         if ($foundByUsername || $foundByPhone) {
             $actionMessage = '';
@@ -85,9 +89,9 @@ class RegisterController extends Controller
 
         // Buat pengguna baru
         $user = User::create([
-            'phone' => $request->phone,
-            'username' => $request->username,
-            'password' => Hash::make($request->password),
+            'phone' => $input['phone'],
+            'username' => $input['username'],
+            'password' => Hash::make($input['password']),
             'otp' => $otp,
         ]);
 
@@ -96,13 +100,13 @@ class RegisterController extends Controller
         $response = Http::withHeaders([
             'Authorization' => env('WA_GATEWAY_KEY')
         ])->post($waurl, [
-            'phone' => $user->phone,
+            'phone' => $user['phone'],
             'text' => 'Your OTP code is: ' . $otp
         ]);
 
         // Cek respons dari API bot WhatsApp
         if ($response->successful()) {
-            session()->put('register_cache_user_id', $user->id);
+            session()->put('register_cache_user_id', $user['id']);
             session()->put('register_step', 'page_2_otp');
             
             return redirect()->route('register');
@@ -120,6 +124,9 @@ class RegisterController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+        // Data Validated
+        $input = $validator->validated();
+
         // Get user by ID
         $user_id = session('register_cache_user_id');
         $user = User::find($user_id);
@@ -129,7 +136,7 @@ class RegisterController extends Controller
         session()->regenerate();
 
         // Check if OTP matches
-        if ($user->otp === $request->otp) {
+        if ($user['otp'] === $input['otp']) {
             // Update user's verified_at and clear OTP
             $user->update([
                 'verified_at' => now(),

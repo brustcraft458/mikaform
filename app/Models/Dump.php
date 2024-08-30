@@ -54,4 +54,23 @@ class Dump extends Model
             'dump_list' => $dump_list
         ];
     }
+
+    static function allPhoneData($uuid_template) {
+        // Get Template
+        $template = Template::where('uuid', $uuid_template)->first();
+        if (!$template) {
+            return [
+                'phone_list' => []
+            ];
+        }
+        $template = $template->toArray();
+
+        // Get Phone
+        $section = Section::where('type', 'phone')->where('id_template', $template['id'])->first();
+        $phone_list = Data::select('value')->where('id_section', $section['id'])->pluck('value')->toArray();
+
+        return [
+            'phone_list' => $phone_list
+        ];
+    }
 }

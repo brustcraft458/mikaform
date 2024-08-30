@@ -15,9 +15,9 @@ class UserSeeder extends Seeder
     {
         User::firstOrCreate([
             'username' => 'adminuser',
-            'phone' => '0812345678'
+            'phone' => '6281234567890'
         ], [
-            'password' => bcrypt('admin123'),
+            'password' => bcrypt('admin12345678'),
             'role' => 'admin',
             'verified_at'=> now()
         ]);
