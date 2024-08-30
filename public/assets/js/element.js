@@ -277,30 +277,76 @@ class ElementQRCode {
         this.data = data
         
         if (this.option.generate) {
-            this.generate()
+            this.initGenerate()
         } else if (this.option.scanner) (
-            this.scanner()
+            this.initScanner()
         )
     }
 
-    generate() {
-        const text = JSON.stringify(this.data);
-
+    initGenerate() {
         // Clear
         this.elmMain.innerHTML = "";
+
+        this.onGenerate(this.data)
+    }
+
+    onGenerate(json) {
+        const text = JSON.stringify(json)
 
         // Generate new QR code
         new QRCode(this.elmMain, {
             text: text,
-            width: 200,
-            height: 200,
+            width: 220,
+            height: 220,
             colorDark: "#000000",
             colorLight: "#ffffff"
-        });
+        })
     }
 
-    scanner() {
+    initScanner() {
+        // Init Canvas
+        const canvas = document.createElement('canvas')
+        const context = canvas.getContext('2d', { willReadFrequently: true })
+
+        // Init Camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                this.elmMain.srcObject = stream
+            })
+            .catch((error) => {
+                console.error('Error accessing the camera:', error)
+            })
         
+        // Scan
+        const scanQRCode = () => {
+            if (this.elmMain.readyState === this.elmMain.HAVE_ENOUGH_DATA) {
+                canvas.width = this.elmMain.videoWidth
+                canvas.height = this.elmMain.videoHeight
+                context.drawImage(this.elmMain, 0, 0, canvas.width, canvas.height)
+
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+                const code = jsQR(imageData.data, imageData.width, imageData.height)
+                
+                try {
+                    let djson = JSON.parse(code.data)
+                    this.onScanner(djson)
+                    // stream.getTracks().forEach(track => track.stop())
+                } catch (err) {
+                    // pass   
+                }
+            }
+
+            requestAnimationFrame(scanQRCode)
+        }
+        
+        // Assign Video
+        this.elmMain.addEventListener('play', () => {
+            scanQRCode()
+        })
+    }
+
+    onScanner(json) {
+        console.log(json)
     }
 }
 
@@ -328,7 +374,7 @@ if (queryFormShare) {
 
 const queryQrScan = document.querySelector("#qrscan")
 if (queryQrScan) {
-    new ElementQRCode(queryQrCode, {scanner: true})
+    new ElementQRCode(queryQrScan, {scanner: true})
 }
 
 

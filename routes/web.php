@@ -69,3 +69,4 @@ Route::post('/form/share/{uuid}', [FormDataController::class, 'userInput']);
 
 // presence qr
 Route::get('/presence/{uuid}', [PresenceController::class, 'webPresence']);
+Route::get('/presence/scan/{uuid}', [PresenceController::class, 'webScanner']);
