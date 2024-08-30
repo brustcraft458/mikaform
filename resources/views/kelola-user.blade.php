@@ -10,7 +10,7 @@
         $diffInDays = $now->diffInDays($timeAt);
         $diffInMonths = $now->diffInMonths($timeAt);
 
-        $badgeClass = '';
+        $badgeClass = 'badge bg-secondary';
         $timeText = '';
 
         if ($diffInMinutes === 0) {
@@ -20,8 +20,6 @@
             $timeText = $diffInMinutes . ' menit yang lalu';
             if ($diffInMinutes <= 5) {
                 $badgeClass = 'badge bg-success';
-            } else {
-                $badgeClass = 'badge bg-secondary';
             }
         } elseif ($diffInHours < 24) {
             $timeText = $diffInHours . ' jam yang lalu';
@@ -73,7 +71,7 @@
                     </div>
 
                     <!-- Table with stripped rows -->
-                    <table class="table datatable datatable-stream table-hover">
+                    <table class="table datatable datatable-stream">
                         <thead>
                             <tr>
                                 <th scope="col">Username</th>
