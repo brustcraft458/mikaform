@@ -1,3 +1,39 @@
+@php
+    function formatTimeAt($timeAt) {
+        if (is_null($timeAt)) {
+            return '<span class="badge bg-danger">tidak ada</span>';
+        }
+
+        $now = \Carbon\Carbon::now();
+        $diffInMinutes = $now->diffInMinutes($timeAt);
+        $diffInHours = $now->diffInHours($timeAt);
+        $diffInDays = $now->diffInDays($timeAt);
+        $diffInMonths = $now->diffInMonths($timeAt);
+
+        $badgeClass = 'badge bg-secondary';
+        $timeText = '';
+
+        if ($diffInMinutes === 0) {
+            $timeText = 'sekarang';
+            $badgeClass = 'badge bg-success';
+        } elseif ($diffInMinutes < 60) {
+            $timeText = $diffInMinutes . ' menit yang lalu';
+            if ($diffInMinutes <= 5) {
+                $badgeClass = 'badge bg-success';
+            }
+        } elseif ($diffInHours < 24) {
+            $timeText = $diffInHours . ' jam yang lalu';
+        } elseif ($diffInDays < 30) {
+            $timeText = $diffInDays . ' hari yang lalu';
+        } else {
+            $timeText = $diffInMonths . ' bulan yang lalu';
+        }
+
+        return '<span class="' . $badgeClass . '">' . $timeText . '</span>';
+    }
+@endphp
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,7 +44,7 @@
 <body>
     <main class="d-flex flex-row">
         <!-- Sidebar -->
-        @include('component.sidebar', ['selected' => 'kelola-user'])
+        @include('component.sidebar', ['selected' => 'user_manage'])
 
         <!-- Dashboard -->
         <div class="container-fluid px-5 py-3">
@@ -35,14 +71,14 @@
                     </div>
 
                     <!-- Table with stripped rows -->
-                    <table class="table datatable datatable-stream table-striped table-hover">
+                    <table class="table datatable datatable-stream">
                         <thead>
                             <tr>
                                 <th scope="col">Username</th>
-                                <th scope="col">Role</th>
                                 <th scope="col">Phone</th>
                                 <th scope="col">Verified At</th>
-                                <th scope="col">Status</th>
+                                <th scope="col">Updated At</th>
+                                <th scope="col">Role</th>
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
@@ -50,9 +86,14 @@
                             @foreach ($user_list as $user)
                                 <tr>
                                     <td>{{ $user->username }}</td>
+                                    <td>{{ $user->phone }}</td>
+                                    <td>{!! formatTimeAt($user->verified_at) !!}</td>
+                                    <td>{!! formatTimeAt($user->updated_at) !!}</td>
                                     <td>
-                                        <form action="{{ route('kelola-user.ubah-role', $user->id) }}" method="POST">
+                                        <form action="{{ url('/user/manage') }}" method="POST">
                                             @csrf
+                                            <input type="hidden" name="user_change_role" value="">
+                                            <input type="hidden" name="id" value="{{ $user->id }}">
                                             <select name="role" onchange="this.form.submit()" class="form-select">
                                                 <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>
                                                     Admin</option>
@@ -64,14 +105,12 @@
                                             </select>
                                         </form>
                                     </td>
-                                    <td>{{ $user->phone }}</td>
-                                    <td>{{ $user->verified_at ? $user->verified_at : 'Not Verified' }}</td>
-                                    <td>{{ $user->verified_at ? $user->updated_at : 'Not Verified' }}</td>
                                     <td>
-                                        <form action="{{ route('kelola-user.hapus-user', $user->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
+                                        <form action="{{ url('/user/manage') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
                                             @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                            <input type="hidden" name="user_delete" value="">
+                                            <input type="hidden" name="id" value="{{ $user->id }}">
+                                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
                                         </form>
                                     </td>
                                 </tr>
