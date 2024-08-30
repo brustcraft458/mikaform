@@ -5,6 +5,7 @@ use App\Http\Controllers\FormTemplateController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\OTPVerificationController;
+use App\Http\Controllers\PresenceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\KelolaUserController;
@@ -22,7 +23,7 @@ use App\Http\Controllers\UserProfileController;
 |
 */
 // login_view+post
-Route::get('/', fn() => redirect('/login'));
+Route::get('/', fn() => redirect('/login'))->name('landing');
 Route::get('/login', [LoginController::class, 'webLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::get('/logout', [LoginController::class, 'logout']);
@@ -65,3 +66,6 @@ Route::get('/form/data/{uuid}', [FormDataController::class, 'webData'])->name('f
 // share
 Route::get('/form/share/{uuid}', [FormDataController::class, 'webShare'])->name('form_share');
 Route::post('/form/share/{uuid}', [FormDataController::class, 'userInput']);
+
+// presence qr
+Route::get('/presence/{uuid}', [PresenceController::class, 'webPresence']);

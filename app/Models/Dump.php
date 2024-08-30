@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Dump extends Model
 {
@@ -15,6 +16,22 @@ class Dump extends Model
         'id_template'
     ];
 
+    /**
+     * Before creating a record.
+     */
+    protected static function booted()
+    {
+        static::creating(function ($dump) {
+            // Generate a UUID
+            if (empty($dump->uuid)) {
+                $dump->uuid = (string) Str::uuid();
+            }
+        });
+    }
+
+    /**
+     * Functions
+     */
     static function allCombinedData($uuid_template) {
         $label_list = [];
 

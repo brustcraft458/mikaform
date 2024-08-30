@@ -270,6 +270,40 @@ class ElementFormItem {
     }
 }
 
+class ElementQRCode {
+    constructor(element, option = {generate: false, scanner: false}, data = {}) {
+        this.elmMain = element
+        this.option = option
+        this.data = data
+        
+        if (this.option.generate) {
+            this.generate()
+        } else if (this.option.scanner) (
+            this.scanner()
+        )
+    }
+
+    generate() {
+        const text = JSON.stringify(this.data);
+
+        // Clear
+        this.elmMain.innerHTML = "";
+
+        // Generate new QR code
+        new QRCode(this.elmMain, {
+            text: text,
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff"
+        });
+    }
+
+    scanner() {
+        
+    }
+}
+
 // Assign
 const queryEditText = document.querySelectorAll(".edit-text");
 if (queryEditText) {
@@ -290,6 +324,11 @@ if (queryFormShare) {
     queryFormShare.forEach(element => {
         new ElementForm(element, {isUserInput: true});
     });
+}
+
+const queryQrScan = document.querySelector("#qrscan")
+if (queryQrScan) {
+    new ElementQRCode(queryQrCode, {scanner: true})
 }
 
 

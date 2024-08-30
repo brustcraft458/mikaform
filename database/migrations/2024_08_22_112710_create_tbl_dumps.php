@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('tbl_dumps', function (Blueprint $table) {
             $table->id();
+            $table->uuid()->unique();
             $table->timestamps();
             $table->unsignedBigInteger('id_template');
 
