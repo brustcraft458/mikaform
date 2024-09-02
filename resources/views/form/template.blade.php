@@ -54,7 +54,7 @@
                                         {{ $form['total_viewed'] }} <i class="bi {{ ($form == 'public') ? 'bi-people' : 'bi-lock' }}"></i> <i style="opacity: 0">ii</i> {{ $form['total_respondent'] }} <i class="bi bi-database-down"></i></i>
                                     </td>
                                     <td>
-                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#more-data-{{ $form['uuid'] }}"><i class="bi bi-three-dots-vertical"></i></button>
+                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#more-data-{{ $form['uuid'] }}"><i class="bi bi-three-dots-vertical"></i></button>
                                         <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#edit-data-{{ $form['uuid'] }}"><i class="bi bi-pencil"></i></button>
                                         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-data-{{ $form['uuid'] }}"><i class="bi bi-trash"></i></button>
                                     </td>
@@ -73,14 +73,14 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title rounded" id="form-add-title">Opsi Tambahan</h5>
+                                        <h5 class="modal-title rounded" id="form-add-title">Opsi Lainnya</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div>
                                         <div class="modal-body">
                                             <div class="form-group my-3">
                                                 <button type="button" class="btn btn-outline-primary" onclick="copyToClipboard(`{{ url('/form/share/') }}/{{ $form['uuid'] }}`)">Copy Link</button>
-                                                <button type="button" class="btn btn-outline-primary">Scan Presensi</button>
+                                                <button type="button" class="btn btn-outline-primary" onclick="redirectToTab(`{{ url('/presence/scan/') }}/{{ $form['uuid'] }}`)">Scan Presensi</button>
                                             </div>
                                         </div>
                                         <div class="modal-footer">

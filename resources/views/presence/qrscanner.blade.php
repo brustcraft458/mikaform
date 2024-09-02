@@ -58,7 +58,7 @@
             }
 
             const qrScan = document.querySelector("#qrscan")
-            new ElementQRCode(qrScan, {scanner: true})
+            new ElementQRCode(qrScan, {scanner: true}, {uuid: '{{$uuid}}'})
         }, { once: true });
     </script>
 </body>

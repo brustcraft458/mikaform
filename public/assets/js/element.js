@@ -1,5 +1,6 @@
 // Global
 var globalCounter = 0
+var globalCSRF = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 
 // Edit Text
 class ElementEditText {
@@ -275,12 +276,14 @@ class ElementQRCode {
         this.elmMain = element
         this.option = option
         this.data = data
+        this.lastUUID = ''
         
         if (this.option.generate) {
             this.initGenerate()
-        } else if (this.option.scanner) (
+        } else if (this.option.scanner) {
+            console.log('scanner init')
             this.initScanner()
-        )
+        }
     }
 
     initGenerate() {
@@ -345,8 +348,43 @@ class ElementQRCode {
         })
     }
 
-    onScanner(json) {
-        console.log(json)
+    async onScanner(json) {
+        if (!json.hasOwnProperty("type") || !json.hasOwnProperty("uuid")) {return}
+        if (json.type != 'presence') {return}
+        if (json.uuid == this.lastUUID) {return}
+
+        // Init
+        const templateUUID = this.data.uuid
+
+        // Set
+        this.lastUUID = json.uuid
+
+        // Post
+        try {
+            let response = await fetch(`/api/presence/scan/${templateUUID}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': globalCSRF
+                },
+                body: JSON.stringify(json)
+            })
+    
+            let data = await response.json()
+
+            // Message
+            console.log(data)
+            Swal.fire({
+                title: "Scan Success!",
+                text: "Terimakasih yang sudah hadir",
+                icon: "success",
+                timer: 4000
+            })
+        } catch (err) {
+            this.lastUUID = ''
+            console.log('qrfail', err)
+            return
+        }
     }
 }
 
@@ -372,12 +410,6 @@ if (queryFormShare) {
     });
 }
 
-const queryQrScan = document.querySelector("#qrscan")
-if (queryQrScan) {
-    new ElementQRCode(queryQrScan, {scanner: true})
-}
-
-
 function generateIncrementNumber() {
     globalCounter += 1
     return globalCounter
@@ -389,4 +421,8 @@ function copyToClipboard(text) {
     }).catch(function(err) {
         console.error('Error copying text: ', err);
     });
+}
+
+function redirectToTab(url) {
+    window.open(url, '_blank');
 }

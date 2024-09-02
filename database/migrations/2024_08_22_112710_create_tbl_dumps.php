@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->uuid()->unique();
             $table->timestamps();
+            $table->timestamp('presence_at')->nullable();
             $table->unsignedBigInteger('id_template');
 
             $table->foreign('id_template')->references('id')->on('tbl_template')->onDelete('cascade')->onUpdate('cascade');
