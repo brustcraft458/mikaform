@@ -358,6 +358,7 @@ class ElementQRCode {
 
         // Set
         this.lastUUID = json.uuid
+        json['presence_input'] = ''
 
         // Post
         try {
@@ -369,6 +370,11 @@ class ElementQRCode {
                 },
                 body: JSON.stringify(json)
             })
+
+            if (!response.ok) {
+                let errorData = await response.json()
+                throw `status: ${response.status}, data: ${JSON.stringify(errorData) || ''}`
+            }
     
             let data = await response.json()
 

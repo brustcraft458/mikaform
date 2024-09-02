@@ -21,22 +21,19 @@
                         <h5 class="modal-title rounded" id="form-qr-title">QR Presensi</h5>
                     </div>
                 </div>
-                <form id="form-qr" action="{{ url("/form/share/$uuid")}}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-body">
-                        <div id="form-qr-section">
-                            <div class="form-group my-2 d-flex flex-column" id="form-qr">
-                                <div class="align-self-center p-2 shadow-sm rounded mt-4" id="form-qr-image">
-                                    <div id="qrcode"></div>
-                                </div>
+                <div id="form-qr" class="modal-body">
+                    <div id="form-qr-section">
+                        <div class="form-group my-2 d-flex flex-column" id="form-qr">
+                            <div class="align-self-center p-2 shadow-sm rounded mt-4" id="form-qr-image">
+                                <div id="qrcode"></div>
                             </div>
                         </div>
-                        <div class="form-group mt-4">
-                        </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="form-group mt-4">
                     </div>
-                </form>
+                </div>
+                <div class="modal-footer">
+                </div>
             </div>
         </div>
     </div><!-- End Add Modal -->

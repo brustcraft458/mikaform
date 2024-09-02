@@ -21,13 +21,24 @@
                         <h5 class="modal-title rounded" id="form-qr-title">Scan QR Presensi</h5>
                     </div>
                 </div>
-                <div>
-                    <div id="form-qr" class="modal-body">
+                <form id="form-qr" action="{{ url("/presence/scan/$uuid")}}" method="POST">
+                    @csrf
+                    <div class="modal-body">
                         <div id="form-qr-section">
                             <div class="form-group my-2 d-flex flex-column" id="form-qr">
                                 <div class="align-self-center p-2 shadow-sm rounded mt-4" id="form-qr-image">
-                                    <video class="view" id="qrscan" autoplay></video>
+                                    @if (is_null($last))
+                                        <img src="https://dummyimage.com/600x350/dcdfed/595959.png" alt="">
+                                    @else
+                                        <video class="view" id="qrscan" autoplay></video>
+                                    @endif
                                 </div>
+                                @if (is_null($last))
+                                    <div class="d-flex row align-self-center justify-content-center p-2 rounded mt-4">
+                                        <p class="text-center">Anda Tidak Membuat Presensi untuk Hari Ini</p>
+                                        <input type="submit" class="btn btn-outline-primary" style="width: 200px" name="presence_generate" value="Buat Presensi Sekarang">
+                                    </div>
+                                @endif
                             </div>
                         </div>
                         <div class="form-group mt-4">
@@ -35,7 +46,7 @@
                     </div>
                     <div class="modal-footer">
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div><!-- End Add Modal -->
@@ -58,7 +69,9 @@
             }
 
             const qrScan = document.querySelector("#qrscan")
-            new ElementQRCode(qrScan, {scanner: true}, {uuid: '{{$uuid}}'})
+            if (qrScan) {
+                new ElementQRCode(qrScan, {scanner: true}, {uuid: '{{$uuid}}'})
+            }
         }, { once: true });
     </script>
 </body>

@@ -15,4 +15,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post("/presence/scan/{uuid}", [PresenceController::class, 'inputPresence']);
+Route::post("/presence/scan/{uuid}", [PresenceController::class, 'handlePresence']);
