@@ -21,3 +21,37 @@
 .item-href:hover {
     color: blue;
 }
+
+.datatable {
+    display: none
+}
+
+.datatable-wrapper {
+    position: relative;
+}
+
+.datatable-wrapper .datatable-search input {
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .075);
+    width: 250px;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.datatable-wrapper .datatable-search {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 4;
+}
+
+.datatable-wrapper .datatable-search input:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 .2rem rgba(38, 143, 255, .25);
+}
