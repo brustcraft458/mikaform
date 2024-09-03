@@ -1,5 +1,6 @@
 // Global
 var globalCounter = 0
+var globalCSRF = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 
 // Edit Text
 class ElementEditText {
@@ -82,6 +83,7 @@ class ElementForm {
                     <select class="form-control w-50" id="${uname}-type">
                         <option value="text">Text</option>
                         <option value="number">Number</option>
+                        <option value="phone">Phone</option>
                         <option value="file">File</option>
                         <option value="payment">Payment</option>
                     </select>
@@ -181,9 +183,13 @@ class ElementFormItem {
         if (selected === 'text') {
             this.elmInput.type = "text"
             this.elmInput.value = "Hello Word"
-        } else if (selected === 'number') {
+        } else if (selected === 'number' || selected === 'phone') {
             this.elmInput.type = "number"
-            this.elmInput.value = '1234456789'
+            if (selected === 'phone') {
+                this.elmInput.value = '081234567890'
+            } else {
+                this.elmInput.value = '1234456789'
+            }
         } else if (selected === 'file' || selected == 'payment') {
             this.elmInput.type = "file"
         }
@@ -265,6 +271,136 @@ class ElementFormItem {
     }
 }
 
+class ElementQRCode {
+    constructor(element, option = {generate: false, scanner: false}, data = {}) {
+        this.elmMain = element
+        this.option = option
+        this.data = data
+        this.lastUUID = ''
+        
+        if (this.option.generate) {
+            this.initGenerate()
+        } else if (this.option.scanner) {
+            this.initScanner()
+        }
+    }
+
+    initGenerate() {
+        // Clear
+        this.elmMain.innerHTML = "";
+
+        this.onGenerate(this.data)
+    }
+
+    onGenerate(json) {
+        const text = JSON.stringify(json)
+
+        // Generate new QR code
+        new QRCode(this.elmMain, {
+            text: text,
+            width: 220,
+            height: 220,
+            colorDark: "#000000",
+            colorLight: "#ffffff"
+        })
+    }
+
+    initScanner() {
+        // Init Canvas
+        const canvas = document.createElement('canvas')
+        const context = canvas.getContext('2d', { willReadFrequently: true })
+
+        // Init Camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                this.elmMain.srcObject = stream
+            })
+            .catch((error) => {
+                console.error('Error accessing the camera:', error)
+            })
+        
+        // Scan
+        const scanQRCode = () => {
+            if (this.elmMain.readyState === this.elmMain.HAVE_ENOUGH_DATA) {
+                canvas.width = this.elmMain.videoWidth
+                canvas.height = this.elmMain.videoHeight
+                context.drawImage(this.elmMain, 0, 0, canvas.width, canvas.height)
+
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+                const code = jsQR(imageData.data, imageData.width, imageData.height)
+                
+                try {
+                    let djson = JSON.parse(code.data)
+                    this.onScanner(djson)
+                    // stream.getTracks().forEach(track => track.stop())
+                } catch (err) {
+                    // pass   
+                }
+            }
+
+            requestAnimationFrame(scanQRCode)
+        }
+        
+        // Assign Video
+        this.elmMain.addEventListener('play', () => {
+            scanQRCode()
+        })
+    }
+
+    async onScanner(json) {
+        if (!json.hasOwnProperty("type") || !json.hasOwnProperty("uuid")) {return}
+        if (json.type != 'presence') {return}
+        if (json.uuid == this.lastUUID) {return}
+
+        // Init
+        const templateUUID = this.data.uuid
+
+        // Set
+        this.lastUUID = json.uuid
+        json['presence_input'] = ''
+
+        // Post
+        try {
+            let response = await fetch(`/api/presence/scan/${templateUUID}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': globalCSRF
+                },
+                body: JSON.stringify(json)
+            })
+
+            if (!response.ok) {
+                let errorData = await response.json()
+                throw {status: response.status, message: errorData.message, data: errorData.data}
+            }
+    
+            let data = await response.json()
+
+            // Message
+            Swal.fire({
+                title: "Scan Success!",
+                text: "Terimakasih yang sudah hadir",
+                icon: "success",
+                timer: 4000
+            })
+        } catch (err) {
+            if (err.status && err.status == 409 && err.message == "presence_input_exists_failed") {
+                Swal.fire({
+                    title: "Scan Exists!",
+                    text: "Anda Sudah Presensi Hari Ini",
+                    icon: "warning",
+                    timer: 4000
+                })
+                return
+            }
+
+            this.lastUUID = ''
+            return
+        }
+    }
+}
+
 // Assign
 const queryEditText = document.querySelectorAll(".edit-text");
 if (queryEditText) {
@@ -287,7 +423,6 @@ if (queryFormShare) {
     });
 }
 
-
 function generateIncrementNumber() {
     globalCounter += 1
     return globalCounter
@@ -299,4 +434,8 @@ function copyToClipboard(text) {
     }).catch(function(err) {
         console.error('Error copying text: ', err);
     });
+}
+
+function redirectToTab(url) {
+    window.open(url, '_blank');
 }

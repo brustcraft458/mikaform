@@ -15,6 +15,9 @@ class Dump extends Model
         'id_template'
     ];
 
+    /**
+     * Functions
+     */
     static function allCombinedData($uuid_template) {
         $label_list = [];
 
@@ -52,6 +55,25 @@ class Dump extends Model
         return [
             'label_list' => $label_list,
             'dump_list' => $dump_list
+        ];
+    }
+
+    static function allPhoneData($uuid_template) {
+        // Get Template
+        $template = Template::where('uuid', $uuid_template)->first();
+        if (!$template) {
+            return [
+                'phone_list' => []
+            ];
+        }
+        $template = $template->toArray();
+
+        // Get Phone
+        $section = Section::where('type', 'phone')->where('id_template', $template['id'])->first();
+        $phone_list = Data::select('value')->where('id_section', $section['id'])->pluck('value')->toArray();
+
+        return [
+            'phone_list' => $phone_list
         ];
     }
 }

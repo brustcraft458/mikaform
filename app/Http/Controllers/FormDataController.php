@@ -66,7 +66,7 @@ class FormDataController extends Controller
 
         // Get Sections
         foreach ($input['section_list'] as $section) {
-            $sectionDB = Section::find($section['id'])->where('id_template', $template['id']);
+            $sectionDB = Section::find($section['id'])->where('id_template', $template['id'])->first();
             if (!$sectionDB) {
                 session()->flash('action_message', 'form_input_failed');
                 session()->flash('action_data', ['form_uuid' => $uuid, 'section_id' => $section['id'], 'state' => 'section_not_found']);
@@ -77,11 +77,11 @@ class FormDataController extends Controller
         // New Dump
         $dump = Dump::create(['id_template' => $template['id']]);
 
-        // return response()->json($input['section_list']);
-
         // Input Sections
-        foreach ($input['section_list'] as $section) {
-            if ($section['type'] == 'file') {
+        foreach ($input['section_list'] as &$section) {
+            if ($section['type'] == 'number') {
+                $section['value'] = formatPhone($section['value']);
+            } elseif ($section['type'] == 'file') {
                 // Has File
                 $fileLabel = $section['value'];
                 $file = $request->file($fileLabel);
