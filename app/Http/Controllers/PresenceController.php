@@ -52,10 +52,9 @@ class PresenceController extends Controller
         // Get Template
         $template = Template::where('uuid', $uuid)->first();
         if (!$template) {
-            return response()->json([
-                'uuid' => $uuid,
-                'message' => 'Template Not Found'
-            ], 404);
+            session()->flash('action_message', 'presence_generate_notfound_failed');
+            session()->flash('action_data', ['template_uuid' => $uuid, 'state' => 'template_not_found']);
+            return redirect()->route('presence_scanner', ['uuid' => $uuid]);
         }
 
         // Dump List
@@ -98,8 +97,8 @@ class PresenceController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
+                'message' => 'presence_input_validation_failed',
+                'data' => $validator->errors()
             ], 400);
         }
 
@@ -109,8 +108,8 @@ class PresenceController extends Controller
         $template = Template::where('uuid', $uuid)->first();
         if (!$template) {
             return response()->json([
-                'uuid' => $uuid,
-                'message' => 'Template Not Found'
+                'message' => 'presence_input_notfound_failed',
+                'data' => ['template_uuid' => $uuid, 'state' => 'template_not_found']
             ], 404);
         }
 
@@ -118,12 +117,20 @@ class PresenceController extends Controller
         $presence = Presence::where('uuid', $input['uuid'])->where('id_template', $template['id'])->first();
         if (!$presence) {
             return response()->json([
-                'uuid' => $uuid,
-                'message' => 'Presence Not Found'
+                'message' => 'presence_input_notfound_failed',
+                'data' => ['presence_uuid' => $input['uuid'], 'state' => 'presence_not_found']
             ], 404);
         }
+
+        if (!is_null($presence['presence_at'])) {
+            return response()->json([
+                'message' => 'presence_input_exists_failed',
+                'data' => ['presence_uuid' => $input['uuid'], 'state' => 'presence_exists']
+            ], 409);
+        }
+
         $presence->update(['presence_at' => now()]);
 
-        return response()->json(['message' => 'Scan Success']);
+        return response()->json(['message' => 'presence_input_success']);
     }
 }

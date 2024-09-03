@@ -281,7 +281,6 @@ class ElementQRCode {
         if (this.option.generate) {
             this.initGenerate()
         } else if (this.option.scanner) {
-            console.log('scanner init')
             this.initScanner()
         }
     }
@@ -373,13 +372,12 @@ class ElementQRCode {
 
             if (!response.ok) {
                 let errorData = await response.json()
-                throw `status: ${response.status}, data: ${JSON.stringify(errorData) || ''}`
+                throw {status: response.status, message: errorData.message, data: errorData.data}
             }
     
             let data = await response.json()
 
             // Message
-            console.log(data)
             Swal.fire({
                 title: "Scan Success!",
                 text: "Terimakasih yang sudah hadir",
@@ -387,8 +385,17 @@ class ElementQRCode {
                 timer: 4000
             })
         } catch (err) {
+            if (err.status && err.status == 409 && err.message == "presence_input_exists_failed") {
+                Swal.fire({
+                    title: "Scan Exists!",
+                    text: "Anda Sudah Presensi Hari Ini",
+                    icon: "warning",
+                    timer: 4000
+                })
+                return
+            }
+
             this.lastUUID = ''
-            console.log('qrfail', err)
             return
         }
     }
