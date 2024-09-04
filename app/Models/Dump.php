@@ -76,7 +76,7 @@ class Dump extends Model
                     'label' => 'Presensi',
                     'type' => 'presence',
                     'value' => $presence->count(),
-                    'data_list' => $presence->pluck('presence_at')->toArray()
+                    'presence_list' => $presence->pluck('presence_at')->toArray()
                 ];
 
                 insertData($data_list, $label_list, $nData); 

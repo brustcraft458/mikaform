@@ -1,5 +1,6 @@
 @php
     use Carbon\Carbon;
+    
     // Year and month from the first date
     $firstDate = Carbon::parse($presence_list[0]);
     $year = $firstDate->year;
@@ -17,7 +18,7 @@
 @endphp
 
 
-<div class="container mt-5">
+<div class="container">
     <div class="calendar-header">
         <h5>{{ Carbon::create($year, $month, 1)->format('F Y') }}</h5>
     </div>
