@@ -84,9 +84,9 @@ class PresenceController extends Controller
                 'phone' => $phone,
                 'text' => $text
             ]);
-
-            return redirect()->route('presence_scanner', ['uuid' => $uuid]);
         }
+
+        return redirect()->route('presence_scanner', ['uuid' => $uuid]);
     }
 
     function inputPresence($request, $uuid) {

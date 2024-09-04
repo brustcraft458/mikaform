@@ -48,7 +48,15 @@
                                 <tr>
                                     @foreach ($dump['data_list'] as $data)
                                         <td>
-                                            {{ $data['value'] }}
+                                            @if ($data['type'] == 'presence')
+                                                @if ($data['value'] == 0)
+                                                    <span class="badge bg-danger">tidak hadir</span>
+                                                @else
+                                                    <span class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#calendar-data-{{ $dump['id'] }}">hadir {{ $data['value'] }}x</span>
+                                                @endif
+                                            @else
+                                                {{ $data['value'] }}
+                                            @endif
                                         </td>
                                     @endforeach
                                 </tr>
@@ -60,6 +68,32 @@
 
                 
                 <div>
+                    @foreach ($dump_list as $dump)
+                        @foreach ($dump['data_list'] as $data)
+                            <!-- Modal Calerdar -->
+                            @if ($data['type'] == 'presence' && !empty($data['presence_list']))
+                                <div class="modal fade" id="calendar-data-{{ $dump['id'] }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title rounded">Kalender Presensi</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div>
+                                                <div class="modal-body">
+                                                    <div class="form-group my-3 d-flex justify-content-center align-items-center">
+                                                        {{view('component.calendar', ['presence_list' => $data['presence_list']])}}
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    @endforeach
                 </div>
 
                 <div class="card-footer py-2">

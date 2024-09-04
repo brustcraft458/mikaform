@@ -423,6 +423,21 @@ if (queryFormShare) {
     });
 }
 
+const queryDataTable = document.querySelectorAll(".datatable");
+if (queryDataTable) {
+    queryDataTable.forEach(table => {
+        const datatable = new simpleDatatables.DataTable(table, {
+            perPage: 7,
+            perPageSelect: false
+        })
+
+        datatable.on('datatable.init', function() {
+            table.style.display = 'table'
+        });
+    })
+}
+
+
 function generateIncrementNumber() {
     globalCounter += 1
     return globalCounter

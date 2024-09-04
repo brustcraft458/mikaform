@@ -19,8 +19,6 @@ class Dump extends Model
      * Functions
      */
     static function allCombinedData($uuid_template) {
-        $label_list = [];
-
         // Get Template
         $template = Template::where('uuid', $uuid_template)->first();
         if (!$template) {
@@ -29,28 +27,67 @@ class Dump extends Model
                 'dump_list' => []
             ];
         }
-        $template = $template->toArray();
 
-        // Get Dump
-        $dump_list = Dump::where('id_template', $template['id'])->get()->toArray();
+        // Init
+        $label_list = []; 
+        $section_cache = [];
+        $dump_list = [];
 
-        foreach ($dump_list as &$dump) {
-            $data_list = Data::select('id', 'id_section', 'value')->where('id_dump', $dump['id'])->get()->toArray();
-
-            foreach ($data_list as &$data) {
-                $section = Section::select('label', 'type')->find($data['id_section'])->toArray();
-
-                // Label
-                if (!in_array($section['label'], $label_list)) {
-                    array_push($label_list, $section['label']);
-                }
-
-                // Set Data
-                $data = array_merge($data, $section);
+        // Function
+        function insertData(&$dataof_list, &$labelof_list, $data) {
+            // Check label_list
+            if (!in_array($data['label'], $labelof_list)) {
+                array_push($labelof_list, $data['label']);
             }
 
-            $dump['data_list'] = $data_list;
+            array_push($dataof_list, $data);
         }
+
+        // Fetch dumps with chunking
+        Dump::where('id_template', $template['id'])->chunk(100, function($dumps) use (&$label_list, &$section_cache, &$dump_list) {
+            foreach ($dumps as $dump) {
+                $data_listDB = Data::select('id', 'id_section', 'value')->where('id_dump', $dump['id'])->get();
+                $data_list = [];
+            
+                // Custom Data
+                foreach ($data_listDB as $data) {
+                    $section_id = $data['id_section'];
+                
+                    // Check cached
+                    if (!isset($section_cache[$section_id])) {
+                        $section_cache[$section_id] = Section::select('label', 'type')->find($section_id);
+                    }
+                
+                    $section = $section_cache[$section_id];
+
+                    // Merge
+                    $nData = [
+                        'label' => $section['label'],
+                        'type' => $section['type'],
+                        'value' => $data['value']
+                    ];
+
+                    insertData($data_list, $label_list, $nData);    
+                }
+
+                // Presence
+                $presence = Presence::where('id_dump', $dump['id'])->whereNotNull('presence_at');
+                $nData = [
+                    'label' => 'Presensi',
+                    'type' => 'presence',
+                    'value' => $presence->count(),
+                    'presence_list' => $presence->pluck('presence_at')->toArray()
+                ];
+
+                insertData($data_list, $label_list, $nData); 
+            
+                // Assign
+                $dump->setAttribute('data_list', $data_list);
+            
+                // Push
+                $dump_list[] = $dump;
+            }
+        });
 
         return [
             'label_list' => $label_list,
