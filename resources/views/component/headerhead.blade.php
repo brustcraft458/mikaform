@@ -6,4 +6,5 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-datatables@9.1.0/dist/style.min.css">
 <link href="{{ url('/assets/css/additional.css')}} " rel="stylesheet">
+<link href="{{ url('/assets/css/calendar.css')}} " rel="stylesheet">
 <title>Document</title>
