@@ -75,6 +75,10 @@ body {
     color: red;
 }
 
+.message.primary {
+    color: #0b96db;
+}
+
 .message.success {
     color: green;
 }

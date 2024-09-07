@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
@@ -16,23 +17,27 @@ class LoginController extends Controller
     }
     public function login(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'username' => 'required',
-            'password' => 'required',
+            'password' => 'required'
         ]);
 
-        $user = User::where('username', $request->username)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if ($validator->fails()) {
             session()->flash('action_message', 'login_fail');
             return redirect()->route('login');
         }
+
+        $input = $validator->validated();
 
         // Regenerate session to prevent session fixation attacks
         session()->flush();
         session()->regenerate();
 
-        session()->put('data_user_id', $user->id);
+        // Auth Login
+        if (!Auth::attempt($input)) {
+            session()->flash('action_message', 'login_fail_userpw');
+            return redirect()->route('login');
+        }
 
         session()->flash('action_message', 'login_success');
         return redirect()->route('form_template');
