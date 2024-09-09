@@ -18,7 +18,13 @@
             <div class="box title">
                 <h2>Login Akun</h2>
                 @if (session('action_message') == 'login_fail')
+                    <p class="message error">Login Gagal.</p>
+                @elseif (session('action_message') == 'login_fail_userpw')
                     <p class="message error">Username atau password salah.</p>
+                @elseif (session('action_message') == 'login_required')
+                    <p class="message primary">Silahkan Login terlebih dahulu.</p>
+                @elseif (session('action_message') == 'role_only_admin')
+                    <p class="message error">Anda bukan Admin.</p>
                 @endif
             </div>
             <div class="box">

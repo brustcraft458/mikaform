@@ -22,52 +22,54 @@ use App\Http\Controllers\UserProfileController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-// login_view+post
+
+// landing
 Route::get('/', fn() => redirect('/login'))->name('landing');
+
+// login
 Route::get('/login', [LoginController::class, 'webLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::get('/logout', [LoginController::class, 'logout']);
-// ====
 
-// Rute untuk menampilkan form pengiriman OTP
+// forgot password
+Route::post('/handle-forgot-password', [ForgotPasswordController::class, 'sendOtp'])->name('handle-forgot-password');
+Route::get('/reset-password', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('reset-password-form');
+Route::post('/new-password', [ForgotPasswordController::class, 'resetPasswords'])->name('reset-password');
 Route::get('/send-otp', [ForgotPasswordController::class, 'showSendOtpForm'])->name('send-otp-form');
 
-// Rute untuk menangani permintaan pengiriman OTP dan verifikasi OTP
-Route::post('/handle-forgot-password', [ForgotPasswordController::class, 'sendOtp'])->name('handle-forgot-password');
-
-
-// Rute untuk menampilkan form reset password setelah verifikasi OTP berhasil
-Route::get('/reset-password', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('reset-password-form');
-
-// Rute POST untuk mengirimkan form reset password (OTP + password baru)
-Route::post('/new-password', [ForgotPasswordController::class, 'resetPasswords'])->name('reset-password');
-
-
-
-//register_view+post
+// register
 Route::get('/register', [RegisterController::class, 'webRegister'])->name('register');
 Route::post('/register', [RegisterController::class, 'handleRegister']);
 
-// template
-Route::get('/form/template', [FormTemplateController::class, 'index'])->name('form_template');
-Route::post('/form/template', [FormTemplateController::class, 'store']);
 
-// kelola show data user
-Route::get('/user/manage', [KelolaUserController::class, 'index'])->name('user_manage');
-// Route untuk mengubah role user
-Route::post('/user/manage', [KelolaUserController::class, 'handleManage']);
+// role admin
+Route::middleware(['role.admin'])->group(function () {
+    // form template
+    Route::get('/form/template', [FormTemplateController::class, 'index'])->name('form_template');
+    Route::post('/form/template', [FormTemplateController::class, 'store']);
 
-// Show Profile
-Route::get('/profile', [UserProfileController::class, 'show'])->name('profile');
+    // form data
+    Route::get('/form/data/{uuid}', [FormDataController::class, 'webData'])->name('form_data');
 
-// data
-Route::get('/form/data/{uuid}', [FormDataController::class, 'webData'])->name('form_data');
+    // presence qr
+    Route::get('/presence/scan/{uuid}', [PresenceController::class, 'webScanner'])->name('presence_scanner');
+    Route::post('/presence/scan/{uuid}', [PresenceController::class, 'handlePresence']);
 
-// share
+    // profile
+    Route::get('/profile', [UserProfileController::class, 'show'])->name('profile'); 
+});
+
+// role super admin
+Route::middleware(['role.superadmin'])->group(function () {
+    // manage user
+    Route::get('/user/manage', [KelolaUserController::class, 'index'])->name('user_manage');
+    Route::post('/user/manage', [KelolaUserController::class, 'handleManage']);
+});
+
+
+// form share
 Route::get('/form/share/{uuid}', [FormDataController::class, 'webShare'])->name('form_share');
 Route::post('/form/share/{uuid}', [FormDataController::class, 'userInput']);
 
 // presence qr
 Route::get('/presence/{uuid}', [PresenceController::class, 'webPresence'])->name('presence_user');
-Route::get('/presence/scan/{uuid}', [PresenceController::class, 'webScanner'])->name('presence_scanner');
-Route::post('/presence/scan/{uuid}', [PresenceController::class, 'handlePresence']);

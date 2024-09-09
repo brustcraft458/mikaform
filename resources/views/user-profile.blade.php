@@ -8,7 +8,7 @@
 <body>
     <main class="d-flex flex-row">
         <!-- Sidebar -->
-        @include('component.sidebar', ['selected' => 'form_template'])
+        @include('component.sidebar', ['selected' => 'profile'])
 
         <!-- Dashboard -->
         <div class="container-fluid px-5 py-3">

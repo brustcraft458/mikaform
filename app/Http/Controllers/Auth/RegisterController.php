@@ -144,8 +144,8 @@ class RegisterController extends Controller
             ]);
 
             
-            session()->flash('action_message', 'register_success');
-            return redirect()->route('form_template');
+            session()->flash('action_message', 'login_required');
+            return redirect()->route('login');
         } else {
             session()->flash('action_message', 'register_fail');
             return redirect()->route('register');
