@@ -24,6 +24,10 @@ class FormDataController extends Controller
     function webShare($uuid) {
         $result = Template::allSection($uuid);
 
+        if (!$result['section_list']) {
+            return redirect()->route('landing');
+        }
+
         return view('form.share', [
             'uuid' => $uuid,
             'title' => $result['title'],
@@ -98,9 +102,9 @@ class FormDataController extends Controller
                 }
 
                 // File Name
-                $uuid = Str::uuid()->toString();
-                $extension = $file->getClientOriginalExtension(); // Mendapatkan ekstensi file
-                $fileName = $uuid . '.' . $extension;
+                $fileUUID = Str::uuid()->toString();
+                $fileExt = $file->getClientOriginalExtension(); // ekstensi file
+                $fileName = $fileUUID . '.' . $fileExt;
 
                 // Save File
                 $filePath = $file->storeAs('uploads', $fileName, 'public');

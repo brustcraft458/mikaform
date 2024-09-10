@@ -128,6 +128,8 @@
                                     <input type="text" class="form-control" id="form-add-s1-input" value="Hello World" disabled>
                                     <select class="form-control w-50" id="form-add-s1-type">
                                         <option value="text">Text</option>
+                                        <option value="name">Name</option>
+                                        <option value="email">Email</option>
                                         <option value="number">Number</option>
                                         <option value="phone">Phone</option>
                                         <option value="file">File</option>

@@ -7,6 +7,7 @@ use App\Models\Section;
 use App\Models\Template;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class FormTemplateController extends Controller
@@ -40,10 +41,8 @@ class FormTemplateController extends Controller
 
         $input = $validator->validated();
 
-        // Sample
-        $user = User::where('role', 'admin')->first();
-
-        // Relation
+        // Self User
+        $user = Auth::user();
         $input['id_user'] = $user['id'];
 
         // New Template

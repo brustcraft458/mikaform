@@ -82,6 +82,8 @@ class ElementForm {
                     <input type="text" class="form-control" id="${uname}-input" value="Hello World" disabled>
                     <select class="form-control w-50" id="${uname}-type">
                         <option value="text">Text</option>
+                        <option value="name">Name</option>
+                        <option value="email">Email</option>
                         <option value="number">Number</option>
                         <option value="phone">Phone</option>
                         <option value="file">File</option>
@@ -180,9 +182,16 @@ class ElementFormItem {
 
     onInputChange(selected) {
         // Option
-        if (selected === 'text') {
+        if (selected === 'email') {
+            this.elmInput.type = "email"
+            this.elmInput.value = "johndoe@testmail.com"
+        } else if (selected === 'text' || selected === 'name') {
             this.elmInput.type = "text"
-            this.elmInput.value = "Hello Word"
+            if (selected === 'name') {
+                this.elmInput.value = "John Doe Lorem"
+            } else {
+                this.elmInput.value = "Hello Word"
+            }
         } else if (selected === 'number' || selected === 'phone') {
             this.elmInput.type = "number"
             if (selected === 'phone') {
@@ -210,8 +219,10 @@ class ElementFormItem {
 
     onInputSanitize(input) {
         let sanitized = ''
-        if (this.elmInput.type == 'text') {
-            sanitized = input.replace(/[^a-zA-Z0-9 ,;.@]/g, '')
+        if (this.elmInput.type == 'email') {
+            sanitized = input.replace(/[^a-zA-Z0-9 .@]/g, '')
+        } else if (this.elmInput.type == 'text') {
+            sanitized = input.replace(/[^a-zA-Z0-9 ,;.]/g, '')
         } else if (this.elmInput.type == 'number') {
             sanitized = input.replace(/[^0-9]/g, '')
         } else {
