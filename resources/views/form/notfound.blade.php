@@ -19,6 +19,8 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin-left: 20px;
+            margin-right: 20px;
         }
         h1 {
             font-size: 5rem;
