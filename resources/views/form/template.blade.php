@@ -76,18 +76,83 @@
                                         <h5 class="modal-title rounded" id="form-add-title">Opsi Lainnya</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form action="{{ url('/form/template')}}" method="POST">
+                                    <form id="more-data-{{$form['uuid']}}-form" action="{{ url('/form/template')}}" method="POST">
                                         @csrf
                                         <input type="hidden" name="form_option" value="">
                                         <input type="hidden" name="uuid" value="{{ $form['uuid'] }}">
                                         <div class="modal-body">
-                                            <div class="form-group my-3">
+                                            <!-- Card Selection Grid -->
+                                            <div class="row row-cols-1 row-cols-md-2 g-3">
                                                 @if ($form['visibility'] == 'public')
-                                                    <button type="button" class="btn btn-outline-primary" onclick="sendFormAction(this.form, 'visibility', 'private')">Make Private</button>
-                                                    <button type="button" class="btn btn-outline-primary" onclick="copyToClipboard(`{{ url('/form/share/') }}/{{ $form['uuid'] }}`)">Copy Link</button>
-                                                    <button type="button" class="btn btn-outline-primary" onclick="redirectToTab(`{{ url('/presence/scan/') }}/{{ $form['uuid'] }}`)">Scan Presensi</button>
+                                                    <!-- Make Private Card -->
+                                                    <div class="col">
+                                                        <div class="card h-100 text-center card-hover"
+                                                            onclick="sendFormAction('more-data-{{$form['uuid']}}-form', 'visibility', 'private')"
+                                                            style="max-width: 200px; margin: auto;">
+                                                            <div class="card-body">
+                                                                <div class="card-icon mb-2">
+                                                                    <i class="bi bi-lock fs-4"></i>
+                                                                </div>
+                                                                <h5 class="card-title fs-6">Make Private</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Copy Link Card -->
+                                                    <div class="col">
+                                                        <div class="card h-100 text-center card-hover"
+                                                            onclick="copyToClipboard(`{{ url('/form/share/') }}/{{ $form['uuid'] }}`)"
+                                                            style="max-width: 200px; margin: auto;">
+                                                            <div class="card-body">
+                                                                <div class="card-icon mb-2">
+                                                                    <i class="bi bi-link fs-4"></i>
+                                                                </div>
+                                                                <h5 class="card-title fs-6">Copy Link</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Send Message Card -->
+                                                    <div class="col">
+                                                        <div class="card h-100 text-center card-hover"
+                                                            onclick="sendMessageBroadcast()"
+                                                            style="max-width: 200px; margin: auto;">
+                                                            <div class="card-body">
+                                                                <div class="card-icon mb-2">
+                                                                    <i class="bi bi-send fs-4"></i>
+                                                                </div>
+                                                                <h5 class="card-title fs-6">Send Message</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Scan Presensi Card -->
+                                                    <div class="col">
+                                                        <div class="card h-100 text-center card-hover"
+                                                            onclick="redirectToTab(`{{ url('/presence/scan/') }}/{{ $form['uuid'] }}`)"
+                                                            style="max-width: 200px; margin: auto;">
+                                                            <div class="card-body">
+                                                                <div class="card-icon mb-2">
+                                                                    <i class="bi bi-qr-code fs-4"></i>
+                                                                </div>
+                                                                <h5 class="card-title fs-6">Scan Presensi</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 @else
-                                                    <button type="button" class="btn btn-outline-primary" onclick="sendFormAction(this.form, 'visibility', 'public')">Make Public</button>
+                                                    <!-- Make Public Card -->
+                                                    <div class="col">
+                                                        <div class="card h-100 text-center card-hover"
+                                                            onclick="sendFormAction('more-data-{{$form['uuid']}}-form', 'visibility', 'public')"
+                                                            style="max-width: 200px; margin: auto;">
+                                                            <div class="card-body">
+                                                                <div class="card-icon mb-2">
+                                                                    <i class="bi bi-unlock fs-4"></i>
+                                                                </div>
+                                                                <h5 class="card-title fs-6">Make Public</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 @endif
                                             </div>
                                         </div>
