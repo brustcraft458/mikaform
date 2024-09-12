@@ -51,7 +51,7 @@
                                         <a href="/form/data/{{ $form['uuid'] }}" class="item-href">{{ $form['title'] }}</a>
                                     </td>
                                     <td>
-                                        {{ $form['total_viewed'] }} <i class="bi {{ ($form == 'public') ? 'bi-people' : 'bi-lock' }}"></i> <i style="opacity: 0">ii</i> {{ $form['total_respondent'] }} <i class="bi bi-database-down"></i></i>
+                                        {{ $form['total_viewed'] }} <i class="bi {{ ($form['visibility'] == 'public') ? 'bi-globe2' : 'bi-lock' }}"></i> <i style="opacity: 0">ii</i> {{ $form['total_respondent'] }} <i class="bi bi-database-down"></i></i>
                                     </td>
                                     <td>
                                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#more-data-{{ $form['uuid'] }}"><i class="bi bi-three-dots-vertical"></i></button>
@@ -76,16 +76,24 @@
                                         <h5 class="modal-title rounded" id="form-add-title">Opsi Lainnya</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <div>
+                                    <form action="{{ url('/form/template')}}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="form_option" value="">
+                                        <input type="hidden" name="uuid" value="{{ $form['uuid'] }}">
                                         <div class="modal-body">
                                             <div class="form-group my-3">
-                                                <button type="button" class="btn btn-outline-primary" onclick="copyToClipboard(`{{ url('/form/share/') }}/{{ $form['uuid'] }}`)">Copy Link</button>
-                                                <button type="button" class="btn btn-outline-primary" onclick="redirectToTab(`{{ url('/presence/scan/') }}/{{ $form['uuid'] }}`)">Scan Presensi</button>
+                                                @if ($form['visibility'] == 'public')
+                                                    <button type="button" class="btn btn-outline-primary" onclick="sendFormAction(this.form, 'visibility', 'private')">Make Private</button>
+                                                    <button type="button" class="btn btn-outline-primary" onclick="copyToClipboard(`{{ url('/form/share/') }}/{{ $form['uuid'] }}`)">Copy Link</button>
+                                                    <button type="button" class="btn btn-outline-primary" onclick="redirectToTab(`{{ url('/presence/scan/') }}/{{ $form['uuid'] }}`)">Scan Presensi</button>
+                                                @else
+                                                    <button type="button" class="btn btn-outline-primary" onclick="sendFormAction(this.form, 'visibility', 'public')">Make Public</button>
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="modal-footer">
                                         </div>
-                                    </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -115,6 +123,7 @@
                 </div>
                 <form id="form-add" action="{{ url('/form/template')}}" method="POST">
                     @csrf
+                    <input type="hidden" name="form_add" value="">
                     <div class="modal-body">
                         <div id="form-add-section">
                             <div class="form-group my-2 d-flex flex-column" id="form-add-s1">
