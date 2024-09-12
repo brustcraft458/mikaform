@@ -13,21 +13,39 @@ use Illuminate\Support\Str;
 class FormDataController extends Controller
 {
     function webData($uuid) {
-        $result = Dump::allCombinedData($uuid);
+        $template = Template::allDumpData($uuid);
+
+        if (!$template['label_list']) {
+            return view('form.data', [
+                'label_list' => [],
+                'dump_list' => []
+            ]);
+        }
 
         return view('form.data', [
-            'label_list' => $result['label_list'],
-            'dump_list' => $result['dump_list']
+            'label_list' => $template['label_list'],
+            'dump_list' => $template['dump_list']
         ]);
     }
 
     function webShare($uuid) {
-        $result = Template::allSection($uuid);
+        $template = Template::allSection($uuid);
+
+        if (!$template) {
+            return view('form.notfound', [
+                'uuid' => $uuid
+            ]);
+        }
+
+        // Increment view
+        if (empty(session('action_message'))) {
+            $template->increment('total_viewed');
+        }
 
         return view('form.share', [
             'uuid' => $uuid,
-            'title' => $result['title'],
-            'section_list' => $result['section_list'],
+            'title' => $template['title'],
+            'section_list' => $template['section_list'],
         ]);
     }
 
@@ -98,9 +116,9 @@ class FormDataController extends Controller
                 }
 
                 // File Name
-                $uuid = Str::uuid()->toString();
-                $extension = $file->getClientOriginalExtension(); // Mendapatkan ekstensi file
-                $fileName = $uuid . '.' . $extension;
+                $fileUUID = Str::uuid()->toString();
+                $fileExt = $file->getClientOriginalExtension(); // ekstensi file
+                $fileName = $fileUUID . '.' . $fileExt;
 
                 // Save File
                 $filePath = $file->storeAs('uploads', $fileName, 'public');

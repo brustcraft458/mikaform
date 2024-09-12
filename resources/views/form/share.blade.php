@@ -48,10 +48,16 @@
                                         <div class="d-flex flex-row gap-2">
                                             <input type="number" class="form-control" id="form-share-{{$section['id']}}-input" value="">
                                         </div>
-                                    @else
+                                    @elseif ($section['type'] == 'email')
+                                        <div class="d-flex flex-row gap-2">
+                                            <input type="email" class="form-control" id="form-share-{{$section['id']}}-input" value="">
+                                        </div>
+                                    @elseif ($section['type'] == 'text' || $section['type'] == 'name')
                                         <div class="d-flex flex-row gap-2">
                                             <input type="text" class="form-control" id="form-share-{{$section['id']}}-input" value="">
                                         </div>
+                                    @else
+                                        <div></div>
                                     @endif
                                 </div>
                             @endforeach

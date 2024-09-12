@@ -16,7 +16,7 @@ class FormTemplateSeeder extends Seeder
     public function run(): void
     {
         // Sample
-        $user = User::where('role', 'admin')->first();
+        $user = User::where('role', 'super_admin')->first();
 
         // Create
         $template = Template::firstOrCreate([

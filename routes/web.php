@@ -46,7 +46,7 @@ Route::post('/register', [RegisterController::class, 'handleRegister']);
 Route::middleware(['role.admin'])->group(function () {
     // form template
     Route::get('/form/template', [FormTemplateController::class, 'index'])->name('form_template');
-    Route::post('/form/template', [FormTemplateController::class, 'store']);
+    Route::post('/form/template', [FormTemplateController::class, 'handleForm']);
 
     // form data
     Route::get('/form/data/{uuid}', [FormDataController::class, 'webData'])->name('form_data');
