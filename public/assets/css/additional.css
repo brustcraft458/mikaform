@@ -55,3 +55,14 @@
     outline: 0;
     box-shadow: 0 0 0 .2rem rgba(38, 143, 255, .25);
 }
+
+.card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(var(--bs-primary-rgb), 0.3);
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}

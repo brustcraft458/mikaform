@@ -466,8 +466,9 @@ function redirectToTab(url) {
     window.open(url, '_blank');
 }
 
-function sendFormAction(form, key, value) {
-    const elmm = document.createElement('input');
+function sendFormAction(target, key, value) {
+    const form = document.getElementById(target)
+    const elmm = document.createElement('input')
     elmm.type = 'hidden';
     elmm.name = key;
     elmm.value = value;

@@ -68,7 +68,7 @@
                 
                 <div>
                     @foreach ($form_list as $form)
-                        <!-- Modal Share -->
+                        <!-- Modal Option -->
                         <div class="modal fade" id="more-data-{{ $form['uuid'] }}" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -76,19 +76,84 @@
                                         <h5 class="modal-title rounded" id="form-add-title">Opsi Lainnya</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form action="{{ url('/form/template')}}" method="POST">
+                                    <form id="more-data-{{$form['uuid']}}-form" action="{{ url('/form/template')}}" method="POST">
                                         @csrf
                                         <input type="hidden" name="form_option" value="">
                                         <input type="hidden" name="uuid" value="{{ $form['uuid'] }}">
                                         <div class="modal-body">
-                                            <div class="form-group my-3">
+                                            <!-- Card Selection Grid -->
+                                            <div class="row row-cols-1 row-cols-md-2 g-3">
                                                 @if ($form['visibility'] == 'public')
-                                                    <button type="button" class="btn btn-outline-primary" onclick="sendFormAction(this.form, 'visibility', 'private')">Make Private</button>
-                                                    <button type="button" class="btn btn-outline-primary" onclick="copyToClipboard(`{{ url('/form/share/') }}/{{ $form['uuid'] }}`)">Copy Link</button>
-                                                    <button type="button" class="btn btn-outline-primary" onclick="redirectToTab(`{{ url('/presence/scan/') }}/{{ $form['uuid'] }}`)">Scan Presensi</button>
+                                                    <!-- Make Private Card -->
+                                                    <div class="col">
+                                                        <div class="card h-100 text-center card-hover"
+                                                            onclick="sendFormAction('more-data-{{$form['uuid']}}-form', 'visibility', 'private')"
+                                                            style="max-width: 200px; margin: auto;">
+                                                            <div class="card-body">
+                                                                <div class="card-icon mb-2">
+                                                                    <i class="bi bi-lock fs-4"></i>
+                                                                </div>
+                                                                <h5 class="card-title fs-6">Make Private</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Copy Link Card -->
+                                                    <div class="col">
+                                                        <div class="card h-100 text-center card-hover"
+                                                            onclick="copyToClipboard(`{{ url('/form/share/') }}/{{ $form['uuid'] }}`)"
+                                                            style="max-width: 200px; margin: auto;">
+                                                            <div class="card-body">
+                                                                <div class="card-icon mb-2">
+                                                                    <i class="bi bi-link fs-4"></i>
+                                                                </div>
+                                                                <h5 class="card-title fs-6">Salin Link</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 @else
-                                                    <button type="button" class="btn btn-outline-primary" onclick="sendFormAction(this.form, 'visibility', 'public')">Make Public</button>
+                                                    <!-- Make Public Card -->
+                                                    <div class="col">
+                                                        <div class="card h-100 text-center card-hover"
+                                                            onclick="sendFormAction('more-data-{{$form['uuid']}}-form', 'visibility', 'public')"
+                                                            style="max-width: 200px; margin: auto;">
+                                                            <div class="card-body">
+                                                                <div class="card-icon mb-2">
+                                                                    <i class="bi bi-unlock fs-4"></i>
+                                                                </div>
+                                                                <h5 class="card-title fs-6">Make Public</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 @endif
+
+                                                    <!-- Send Message Card -->
+                                                    <div class="col">
+                                                        <div class="card h-100 text-center card-hover"
+                                                            data-bs-toggle="modal" data-bs-target="#more-message-{{ $form['uuid'] }}"
+                                                            style="max-width: 200px; margin: auto;">
+                                                            <div class="card-body">
+                                                                <div class="card-icon mb-2">
+                                                                    <i class="bi bi-send fs-4"></i>
+                                                                </div>
+                                                                <h5 class="card-title fs-6">Kirim Pesan</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Scan Presensi Card -->
+                                                    <div class="col">
+                                                        <div class="card h-100 text-center card-hover"
+                                                            onclick="redirectToTab(`{{ url('/presence/scan/') }}/{{ $form['uuid'] }}`)"
+                                                            style="max-width: 200px; margin: auto;">
+                                                            <div class="card-body">
+                                                                <div class="card-icon mb-2">
+                                                                    <i class="bi bi-qr-code fs-4"></i>
+                                                                </div>
+                                                                <h5 class="card-title fs-6">Scan Presensi</h5>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -97,6 +162,33 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Modal Option Message -->
+                        <div class="modal fade" id="more-message-{{ $form['uuid'] }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title edit-text rounded">Siarkan Pesan</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form id="more-message-{{ $form['uuid'] }}-form" action="{{ url('/form/template')}}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="form_option" value="">
+                                        <input type="hidden" name="uuid" value="{{ $form['uuid'] }}">
+                                        <div class="modal-body">
+                                            <div class="form-group my-2 d-flex flex-column">
+                                                <label class="col-form-label edit-text rounded">Pesan:</label>
+                                                <textarea class="form-control" rows="4" name="message"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-primary">Kirim</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div><!-- End Add Modal -->
 
 
                         <!-- Modal Edit -->

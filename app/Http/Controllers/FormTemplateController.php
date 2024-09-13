@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Data;
 use App\Models\Dump;
 use App\Models\Section;
 use App\Models\Template;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -30,6 +32,8 @@ class FormTemplateController extends Controller
 
             if ($request->has('visibility')) {
                 return $this->changeVisibility($request, $uuid);
+            } elseif ($request->has('message')) {
+                return $this->broadcastMessage($request, $uuid);
             }
         }
 
@@ -86,7 +90,7 @@ class FormTemplateController extends Controller
 
         // Check if validation fails
         if ($validator->fails()) {
-            session()->flash('action_message', 'form_option_failed');
+            session()->flash('action_message', 'form_option_visibility_failed');
             session()->flash('action_data', $validator->errors());
             return redirect()->route('form_template');
         }
@@ -96,7 +100,7 @@ class FormTemplateController extends Controller
         // Template
         $template = Template::where('uuid', $uuid)->first();
         if (!$template) {
-            session()->flash('action_message', 'form_option_failed');
+            session()->flash('action_message', 'form_option_visibility_failed');
             session()->flash('action_data', $validator->errors());
             return redirect()->route('form_template');
         }
@@ -104,8 +108,58 @@ class FormTemplateController extends Controller
         // Update
         $template->update(['visibility' => $input['visibility']]);
 
-        session()->flash('action_message', 'form_option_success');
-        session()->flash('action_data', $template->toArray());
+        session()->flash('action_message', 'form_option_visibility_success');
+        session()->flash('action_data',  ['visibility' => $input['visibility']]);
+        return redirect()->route('form_template');
+    }
+
+    function broadcastMessage($request, $uuid) {
+        $validator = Validator::make($request->all(), [
+            'message' => 'required|string',
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            session()->flash('action_message', 'form_option_message_failed');
+            session()->flash('action_data', $validator->errors());
+            return redirect()->route('form_template');
+        }
+
+        $input = $validator->validated();
+
+        // Template
+        $template = Template::where('uuid', $uuid)->first();
+        if (!$template) {
+            session()->flash('action_message', 'form_option_message_failed');
+            session()->flash('action_data', $validator->errors());
+            return redirect()->route('form_template');
+        }
+
+        // Dump List
+        $dump_list = Dump::where('id_template', $template['id'])->get();
+
+        foreach ($dump_list as $dump) {
+            // Get Phone
+            $section = Section::where('type', 'phone')->where('id_template', $template['id'])->first();
+            if (!$section) {continue;} 
+            $phone = Data::where('id_dump', $dump['id'])->where('id_section', $section['id'])->pluck('value')->first();
+
+            // Message
+            $text = "Pesan dari\n*'" . $template['title'] . "'*\n\n" . $input['message'];
+            
+            // Send Message
+            $waurl = env('WA_GATEWAY_URL') . '/api' . '/messages';
+            $response = Http::withHeaders([
+                'Authorization' => env('WA_GATEWAY_KEY')
+            ])->post($waurl, [
+                'phone' => $phone,
+                'text' => $text
+            ]);
+        }
+
+        // End
+        session()->flash('action_message', 'form_option_message_success');
+        session()->flash('action_data',  ['count' => count($dump_list)]);
         return redirect()->route('form_template');
     }
 }
