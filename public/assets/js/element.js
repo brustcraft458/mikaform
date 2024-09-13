@@ -479,8 +479,3 @@ function sendFormAction(target, key, value) {
     // Submit
     form.submit()
 }
-
-function sendMessageBroadcast() {
-    // wait
-    console.log("test broadcast")
-}
