@@ -168,7 +168,7 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title edit-text rounded">Siarkan Pesan</h5>
+                                        <h5 class="modal-title rounded">Siarkan Pesan</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <form id="more-message-{{ $form['uuid'] }}-form" action="{{ url('/form/template')}}" method="POST">
@@ -177,7 +177,19 @@
                                         <input type="hidden" name="uuid" value="{{ $form['uuid'] }}">
                                         <div class="modal-body">
                                             <div class="form-group my-2 d-flex flex-column">
-                                                <label class="col-form-label edit-text rounded">Pesan:</label>
+                                                <label class="col-form-label rounded">Filter:</label>
+                                                <div class="d-flex flex-row gap-2">
+                                                <select class="form-control w-50" name="search_label">
+                                                    <option value="none">Tidak Perlu</option>
+                                                    @foreach ($form['section_list'] as $section)
+                                                        <option value="{{$section['label']}}">{{$section['label']}}</option>
+                                                    @endforeach
+                                                </select>
+                                                    <input class="form-control" type="text" name="search_text"></input>
+                                                </div>
+                                            </div>
+                                            <div class="form-group my-2 d-flex flex-column">
+                                                <label class="col-form-label rounded">Pesan:</label>
                                                 <textarea class="form-control" rows="4" name="message"></textarea>
                                             </div>
                                         </div>

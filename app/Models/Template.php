@@ -37,6 +37,17 @@ class Template extends Model
     /**
      * Functions
      */
+    static function allWithSection() {
+        $form_list = self::all();
+
+        foreach ($form_list as &$form) {
+            $section_list = Section::where('id_template', $form['id'])->get();
+            $form->setAttribute('section_list', $section_list);
+        }
+
+        return $form_list;
+    }
+
     static function allSection($uuid_template) {
         // Get Template
         $templateQuery = self::where('uuid', $uuid_template);

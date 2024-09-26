@@ -15,8 +15,7 @@ use Illuminate\Support\Facades\Validator;
 class FormTemplateController extends Controller
 {
     function index() {
-        //$form_list = Template::with('section_list')->get()->toArray();
-        $form_list = Template::all()->toArray();
+        $form_list = Template::allWithSection();
 
         return view('form.template', [
             'form_list' => $form_list
@@ -116,6 +115,8 @@ class FormTemplateController extends Controller
     function broadcastMessage($request, $uuid) {
         $validator = Validator::make($request->all(), [
             'message' => 'required|string',
+            'search_label' => 'nullable|string',
+            'search_text' => 'nullable|string'
         ]);
 
         // Check if validation fails
@@ -139,6 +140,15 @@ class FormTemplateController extends Controller
         $dump_list = Dump::where('id_template', $template['id'])->get();
 
         foreach ($dump_list as $dump) {
+            // Filter
+            if ($input['search_label'] && $input['search_label'] != 'none' && !empty($input['search_text'])) {
+                $exists = Data::where('id_dump', $dump['id'])->where('value', 'like', '%' . $input['search_text'] . '%')->exists();
+
+                if (!$exists) {
+                    continue;
+                }
+            }
+
             // Get Phone
             $section = Section::where('type', 'phone')->where('id_template', $template['id'])->first();
             if (!$section) {continue;} 
