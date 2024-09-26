@@ -17,4 +17,9 @@ class Section extends Model
         'image',
         'id_template'
     ];
+
+    public function data()
+    {
+        return $this->hasMany(Data::class, 'id_section');
+    }
 }
