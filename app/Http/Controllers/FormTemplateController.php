@@ -142,12 +142,19 @@ class FormTemplateController extends Controller
         foreach ($dump_list as $dump) {
             // Filter
             if ($input['search_label'] && $input['search_label'] != 'none' && !empty($input['search_text'])) {
-                $exists = Data::where('id_dump', $dump['id'])->where('value', 'like', '%' . $input['search_text'] . '%')->exists();
-
+                $exists = Section::where('id_template', $template['id'])
+                    ->where('label', $input['search_label'])
+                    ->whereHas('data', function ($query) use ($dump, $input) {
+                        $query->where('id_dump', $dump['id'])
+                              ->where('value', 'like', '%' . $input['search_text'] . '%');
+                    })
+                    ->exists();
+            
                 if (!$exists) {
                     continue;
                 }
             }
+            
 
             // Get Phone
             $section = Section::where('type', 'phone')->where('id_template', $template['id'])->first();
