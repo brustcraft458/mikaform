@@ -57,6 +57,9 @@ class PresenceController extends Controller
             return redirect()->route('presence_scanner', ['uuid' => $uuid]);
         }
 
+        // Init
+        $message_list = [];
+
         // Dump List
         $dump_list = Dump::where('id_template', $template['id'])->get();
 
@@ -75,16 +78,19 @@ class PresenceController extends Controller
             // Message
             $urlpath = url('/presence' . '/' . $presence['uuid']);
             $text = "Silahkan Melakukan Presensi\n*'" . $template['title'] . "'*\nmenggunakan link dibawah ini\n" . $urlpath;
-
-            // Send Message
-            $waurl = env('WA_GATEWAY_URL') . '/api' . '/messages';
-            $response = Http::withHeaders([
-                'Authorization' => env('WA_GATEWAY_KEY')
-            ])->post($waurl, [
+            array_push($message_list, [
                 'phone' => $phone,
                 'text' => $text
             ]);
         }
+
+        // Send All Message
+        $waurl = env('WA_GATEWAY_URL') . '/api' . '/messages';
+        $response = Http::withHeaders([
+            'Authorization' => env('WA_GATEWAY_KEY')
+        ])->post($waurl, [
+            'data_list' => $message_list
+        ]);
 
         return redirect()->route('presence_scanner', ['uuid' => $uuid]);
     }
