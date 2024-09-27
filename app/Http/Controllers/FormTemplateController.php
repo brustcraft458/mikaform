@@ -136,6 +136,9 @@ class FormTemplateController extends Controller
             return redirect()->route('form_template');
         }
 
+        // Init
+        $message_list = [];
+
         // Dump List
         $dump_list = Dump::where('id_template', $template['id'])->get();
 
@@ -163,16 +166,21 @@ class FormTemplateController extends Controller
 
             // Message
             $text = "Pesan dari\n*'" . $template['title'] . "'*\n\n" . $input['message'];
-            
-            // Send Message
-            $waurl = env('WA_GATEWAY_URL') . '/api' . '/messages';
-            $response = Http::withHeaders([
-                'Authorization' => env('WA_GATEWAY_KEY')
-            ])->post($waurl, [
+            array_push($message_list, [
                 'phone' => $phone,
                 'text' => $text
             ]);
+            
         }
+
+        // Send All Message
+        $waurl = env('WA_GATEWAY_URL') . '/api' . '/messages';
+        $response = Http::withHeaders([
+            'Authorization' => env('WA_GATEWAY_KEY')
+        ])->post($waurl, [
+            'data_list' => $message_list
+        ]);
+
 
         // End
         session()->flash('action_message', 'form_option_message_success');
