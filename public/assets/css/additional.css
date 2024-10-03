@@ -13,6 +13,10 @@
     margin-bottom: 10px;
 }
 
+.modal-dialog {
+    overflow: hidden;
+}
+
 .item-href {
     color: black;
     text-decoration: none;
@@ -20,6 +24,46 @@
 
 .item-href:hover {
     color: blue;
+}
+
+@keyframes swipeIn {
+    0% {
+        transform: translateX(-50%);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.swipe-in {
+    animation: swipeIn 0.35s forwards;
+}
+
+@keyframes swipeOut {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+    
+    100% {
+        transform: translateX(-50%);
+        opacity: 0;
+    }
+}
+
+.swipe-out {
+    animation: swipeOut 0.35s forwards;
 }
 
 .datatable {

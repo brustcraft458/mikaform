@@ -99,6 +99,12 @@ class ElementForm {
         new ElementEditText(editText)
         this.memItemList.push(new ElementFormItem(newElm, this.option))
 
+        // Animation
+        newElm.classList.add('swipe-in')
+        newElm.addEventListener('animationend', () => {
+            newElm.classList.remove('swipe-in')
+        }, { once: true })
+
         this.elmChildItem.appendChild(newElm)
     }
 
@@ -243,8 +249,11 @@ class ElementFormItem {
     }
 
     onButtonDelete() {
-        this.elmMain.innerHTML = ''
-        this.elmMain.remove()
+        this.elmMain.classList.add('swipe-out')
+        this.elmMain.addEventListener('animationend', () => {
+            // Delete
+            this.elmMain.remove()
+        }, { once: true })
     }
 
     toJson() {
