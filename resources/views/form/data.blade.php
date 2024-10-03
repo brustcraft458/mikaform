@@ -35,7 +35,7 @@
                     </div>
 
                     <!-- Table with stripped rows -->
-                    <table class="table datatable datatable-stream table-striped table-hover">
+                    <table class="table datatable datatable-stream bigdata table-striped table-hover">
                         <thead>
                             <tr>
                                 @foreach ($label_list as $label)

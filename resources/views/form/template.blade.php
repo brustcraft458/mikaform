@@ -36,7 +36,7 @@
                     </div>
 
                     <!-- Table with stripped rows -->
-                    <table class="table datatable">
+                    <table class="table datatable" id="formTable">
                         <thead>
                             <tr>
                                 <th scope="col">Judul</th>
@@ -51,7 +51,7 @@
                                         <a href="/form/data/{{ $form['uuid'] }}" class="item-href">{{ $form['title'] }}</a>
                                     </td>
                                     <td>
-                                        {{ $form['total_viewed'] }} <i class="bi {{ ($form['visibility'] == 'public') ? 'bi-globe2' : 'bi-lock' }}"></i> <i style="opacity: 0">ii</i> {{ $form['total_respondent'] }} <i class="bi bi-database-down"></i></i>
+                                        {{ $form['total_viewed'] }} <i class="bi {{ ($form['visibility'] == 'public') ? 'bi-globe2' : 'bi-lock' }}"></i> <i style="opacity: 0">ii</i> {{ $form['total_respondent'] }} <i class="bi bi-database-down"></i>
                                     </td>
                                     <td>
                                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#more-data-{{ $form['uuid'] }}"><i class="bi bi-three-dots-vertical"></i></button>

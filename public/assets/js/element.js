@@ -421,6 +421,29 @@ class ElementQRCode {
     }
 }
 
+// Datatable
+(() => {
+    let pageLength = 5
+    let ordering = false
+
+    if ($('.datatable.bigdata').length > 0) {
+        ordering = true
+        pageLength = 8
+    }
+
+    // Initialize
+    $('.datatable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: ordering,
+        info: true,
+        lengthChange: false,
+        pageLength: pageLength
+    });
+
+    setTimeout(() => {$('.datatable').addClass('showed')}, 100)
+})()
+
 // Assign
 const queryEditText = document.querySelectorAll(".edit-text");
 if (queryEditText) {
@@ -442,21 +465,6 @@ if (queryFormShare) {
         new ElementForm(element, {isUserInput: true});
     });
 }
-
-const queryDataTable = document.querySelectorAll(".datatable");
-if (queryDataTable) {
-    queryDataTable.forEach(table => {
-        const datatable = new simpleDatatables.DataTable(table, {
-            perPage: 7,
-            perPageSelect: false
-        })
-
-        datatable.on('datatable.init', function() {
-            table.style.display = 'table'
-        });
-    })
-}
-
 
 function generateIncrementNumber() {
     globalCounter += 1
