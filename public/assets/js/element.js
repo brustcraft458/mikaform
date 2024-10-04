@@ -423,23 +423,103 @@ class ElementQRCode {
 
 // Datatable
 (() => {
-    let pageLength = 5
-    let ordering = false
+    if ($('.datatable#table-form-data').length > 0) {
+        // Big Data
+        var table = initializeDataTable()
+        var selectedIds = []
 
-    if ($('.datatable.bigdata').length > 0) {
-        ordering = true
-        pageLength = 8
+        // Init
+        function initializeDataTable() {
+            return $('.datatable#table-form-data').DataTable({
+                order: [],
+                columnDefs: [
+                    {orderable: false, targets: 0 }
+                ],
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                lengthChange: false,
+                pageLength: 7
+            })
+        }
+
+        // Action
+        function updateHiddenInput() {
+            $('#selected-ids').val(JSON.stringify(selectedIds))
+        }
+
+        function addIdToSelected(id) {
+            if (!selectedIds.includes(id)) {
+                selectedIds.push(id)
+            }
+        }
+
+        function removeIdFromSelected(id) {
+            selectedIds = selectedIds.filter(function(selectedId) {
+                return selectedId !== id
+            })
+        }
+
+        function toggleRowCheckboxes(rows, isChecked) {
+            $('input[type="checkbox"]', rows).prop('checked', isChecked)
+            $('input[type="checkbox"]', rows).each(function() {
+                var id = $(this).val()
+                if (isChecked) {
+                    addIdToSelected(id)
+                } else {
+                    removeIdFromSelected(id)
+                }
+            })
+        }
+
+        function updateSelectAllState(rows) {
+            var allChecked = $('input[type="checkbox"]', rows).length === $('input[type="checkbox"]:checked', rows).length
+            $('#select-all').prop('checked', allChecked)
+        }
+
+        // Assign
+        $('#select-all').on('click', function() {
+            var rows = table.rows({ 'search': 'applied' }).nodes()
+            var isChecked = this.checked
+            toggleRowCheckboxes(rows, isChecked)
+            updateHiddenInput()
+        })
+
+        $('.datatable tbody').on('change', '.row-checkbox', function() {
+            var id = $(this).val()
+            if (this.checked) {
+                addIdToSelected(id)
+            } else {
+                removeIdFromSelected(id)
+            }
+            var rows = table.rows({ 'search': 'applied' }).nodes()
+            updateSelectAllState(rows)
+            updateHiddenInput()
+        })
+
+        // Drawed
+        table.on('draw', function() {
+            var rows = table.rows({ 'search': 'applied' }).nodes()
+            $('input[type="checkbox"]', rows).each(function() {
+                if (selectedIds.includes($(this).val())) {
+                    $(this).prop('checked', true)
+                }
+            })
+            updateSelectAllState(rows)
+            updateHiddenInput()
+        })
+    } else {
+        // Initialize
+        $('.datatable').DataTable({
+            paging: true,
+            searching: true,
+            ordering: false,
+            info: true,
+            lengthChange: false,
+            pageLength: 5
+        });
     }
-
-    // Initialize
-    $('.datatable').DataTable({
-        paging: true,
-        searching: true,
-        ordering: ordering,
-        info: true,
-        lengthChange: false,
-        pageLength: pageLength
-    });
 
     setTimeout(() => {$('.datatable').addClass('showed')}, 100)
 })()

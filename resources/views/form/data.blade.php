@@ -34,10 +34,16 @@
                     <div class="mb-3">
                     </div>
 
+                    <!-- hdiee -->
+                    <input type="hidden" id="selected-ids" name="selected_ids" value="">
+
                     <!-- Table with stripped rows -->
-                    <table class="table datatable datatable-stream bigdata table-striped table-hover">
+                    <table class="table datatable datatable-stream table-striped table-hover" id="table-form-data">
                         <thead>
                             <tr>
+                                <th scope="col" class="no-sort">
+                                    <input type="checkbox" id="select-all">
+                                </th>
                                 @foreach ($label_list as $label)
                                     <th scope="col">{{$label}}</th>
                                 @endforeach
@@ -46,6 +52,9 @@
                         <tbody>
                             @foreach ($dump_list as $dump)
                                 <tr>
+                                    <td>
+                                        <input type="checkbox" class="row-checkbox" value="{{ $dump['id'] }}">
+                                    </td>
                                     @foreach ($dump['data_list'] as $data)
                                         <td>
                                             @if ($data['type'] == 'presence')
