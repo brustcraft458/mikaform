@@ -112,6 +112,13 @@
     </main>
 
     @include('component.footerbody')
+
+    <script>
+        const dataTable = $('#table-form-data')
+        if (dataTable) {
+            new ElementDataTable(dataTable, {isMultiSelect: true})
+        }
+    </script>
 </body>
 
 </html>

@@ -422,107 +422,116 @@ class ElementQRCode {
 }
 
 // Datatable
-(() => {
-    if ($('.datatable#table-form-data').length > 0) {
-        // Big Data
-        var table = initializeDataTable()
-        var selectedIds = []
+class ElementDataTable {
+    constructor(jqElement, option = {isMultiSelect: false}) {
+        this.jqElement = jqElement
+        this.option = option
+        this.selectedIds = []
 
-        // Init
-        function initializeDataTable() {
-            return $('.datatable#table-form-data').DataTable({
-                order: [],
-                columnDefs: [
-                    {orderable: false, targets: 0 }
-                ],
-                paging: true,
-                searching: true,
-                ordering: true,
-                info: true,
-                lengthChange: false,
-                pageLength: 7
-            })
+        if (this.option.isMultiSelect) {
+            this.table = this.initializeDataTable()
+            this.bindEvents()
+        } else {
+            this.table = this.initializeDefaultDataTable()
         }
 
-        // Action
-        function updateHiddenInput() {
-            $('#selected-ids').val(JSON.stringify(selectedIds))
-        }
+        setTimeout(() => { this.jqElement.addClass('showed') }, 100)
+    }
 
-        function addIdToSelected(id) {
-            if (!selectedIds.includes(id)) {
-                selectedIds.push(id)
-            }
-        }
-
-        function removeIdFromSelected(id) {
-            selectedIds = selectedIds.filter(function(selectedId) {
-                return selectedId !== id
-            })
-        }
-
-        function toggleRowCheckboxes(rows, isChecked) {
-            $('input[type="checkbox"]', rows).prop('checked', isChecked)
-            $('input[type="checkbox"]', rows).each(function() {
-                var id = $(this).val()
-                if (isChecked) {
-                    addIdToSelected(id)
-                } else {
-                    removeIdFromSelected(id)
-                }
-            })
-        }
-
-        function updateSelectAllState(rows) {
-            var allChecked = $('input[type="checkbox"]', rows).length === $('input[type="checkbox"]:checked', rows).length
-            $('#select-all').prop('checked', allChecked)
-        }
-
-        // Assign
-        $('#select-all').on('click', function() {
-            var rows = table.rows({ 'search': 'applied' }).nodes()
-            var isChecked = this.checked
-            toggleRowCheckboxes(rows, isChecked)
-            updateHiddenInput()
+    initializeDataTable() {
+        var table = this.jqElement.DataTable({
+            order: [],
+            columnDefs: [{ orderable: false, targets: 0 }],
+            paging: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            lengthChange: false,
+            pageLength: 7
         })
 
-        $('.datatable tbody').on('change', '.row-checkbox', function() {
-            var id = $(this).val()
-            if (this.checked) {
-                addIdToSelected(id)
-            } else {
-                removeIdFromSelected(id)
-            }
-            var rows = table.rows({ 'search': 'applied' }).nodes()
-            updateSelectAllState(rows)
-            updateHiddenInput()
-        })
+        return table
+    }
 
-        // Drawed
-        table.on('draw', function() {
-            var rows = table.rows({ 'search': 'applied' }).nodes()
-            $('input[type="checkbox"]', rows).each(function() {
-                if (selectedIds.includes($(this).val())) {
-                    $(this).prop('checked', true)
-                }
-            })
-            updateSelectAllState(rows)
-            updateHiddenInput()
-        })
-    } else {
-        // Initialize
-        $('.datatable').DataTable({
+    initializeDefaultDataTable() {
+        var table = this.jqElement.DataTable({
             paging: true,
             searching: true,
             ordering: false,
             info: true,
             lengthChange: false,
             pageLength: 5
-        });
+        })
+
+        return table
     }
 
-    setTimeout(() => {$('.datatable').addClass('showed')}, 100)
-})()
+    bindEvents() {
+        this.jqElement.find('#select-all').on('click', () => {
+            const rows = this.table.rows({ 'search': 'applied' }).nodes()
+            const isChecked = this.jqElement.find('#select-all').is(':checked')
+
+            this.toggleRowCheckboxes(rows, isChecked)
+            this.updateHiddenInput()
+        })
+
+        this.jqElement.find('tbody').on('change', '.row-checkbox', (event) => {
+            const id = $(event.currentTarget).val()
+            if (event.currentTarget.checked) {
+                this.addIdToSelected(id)
+            } else {
+                this.removeIdFromSelected(id)
+            }
+
+            const rows = this.table.rows({ 'search': 'applied' }).nodes()
+            this.updateSelectAllState(rows)
+            this.updateHiddenInput()
+        })
+
+        this.table.on('draw', () => {
+            const rows = this.table.rows({ 'search': 'applied' }).nodes()
+
+            $('input[type="checkbox"]', rows).each((_, checkbox) => {
+                $(checkbox).prop('checked', this.selectedIds.includes($(checkbox).val()))
+            })
+
+            this.updateSelectAllState(rows)
+            this.updateHiddenInput()
+        })
+    }
+
+    updateHiddenInput() {
+        $('#selected-ids').val(JSON.stringify(this.selectedIds))
+    }
+
+    addIdToSelected(id) {
+        if (!this.selectedIds.includes(id)) {
+            this.selectedIds.push(id)
+        }
+    }
+
+    removeIdFromSelected(id) {
+        this.selectedIds = this.selectedIds.filter(selectedId => selectedId !== id)
+    }
+
+    toggleRowCheckboxes(rows, isChecked) {
+        $('input[type="checkbox"]', rows).prop('checked', isChecked)
+        $('input[type="checkbox"]', rows).each((_, checkbox) => {
+            const id = $(checkbox).val()
+            
+            if (isChecked) {
+                this.addIdToSelected(id)
+            } else {
+                this.removeIdFromSelected(id)
+            }
+        })
+    }
+
+    updateSelectAllState(rows) {
+        const allChecked = $('input[type="checkbox"]', rows).length === $('input[type="checkbox"]:checked', rows).length
+        this.jqElement.find('#select-all').prop('checked', allChecked)
+    }
+}
 
 // Assign
 const queryEditText = document.querySelectorAll(".edit-text");

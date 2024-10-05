@@ -36,7 +36,7 @@
                     </div>
 
                     <!-- Table with stripped rows -->
-                    <table class="table datatable" id="formTable">
+                    <table class="table datatable" id="table-form-template">
                         <thead>
                             <tr>
                                 <th scope="col">Judul</th>
@@ -266,6 +266,13 @@
     </div><!-- End Add Modal -->
 
     @include('component.footerbody')
+
+    <script>
+        const dataTable = $('#table-form-template')
+        if (dataTable) {
+            new ElementDataTable(dataTable)
+        }
+    </script>
 </body>
 
 </html>
