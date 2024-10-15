@@ -50,6 +50,7 @@ Route::middleware(['role.admin'])->group(function () {
 
     // form data
     Route::get('/form/data/{uuid}', [FormDataController::class, 'webData'])->name('form_data');
+    Route::post('/form/data/{uuid}', [FormDataController::class, 'handleData'])->name('form_data');
 
     // presence qr
     Route::get('/presence/scan/{uuid}', [PresenceController::class, 'webScanner'])->name('presence_scanner');

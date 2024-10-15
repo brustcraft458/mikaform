@@ -99,6 +99,12 @@ class ElementForm {
         new ElementEditText(editText)
         this.memItemList.push(new ElementFormItem(newElm, this.option))
 
+        // Animation
+        newElm.classList.add('swipe-in')
+        newElm.addEventListener('animationend', () => {
+            newElm.classList.remove('swipe-in')
+        }, { once: true })
+
         this.elmChildItem.appendChild(newElm)
     }
 
@@ -243,8 +249,11 @@ class ElementFormItem {
     }
 
     onButtonDelete() {
-        this.elmMain.innerHTML = ''
-        this.elmMain.remove()
+        this.elmMain.classList.add('swipe-out')
+        this.elmMain.addEventListener('animationend', () => {
+            // Delete
+            this.elmMain.remove()
+        }, { once: true })
     }
 
     toJson() {
@@ -412,6 +421,118 @@ class ElementQRCode {
     }
 }
 
+// Datatable
+class ElementDataTable {
+    constructor(jqElement, option = {isMultiSelect: false}) {
+        this.jqElement = jqElement
+        this.option = option
+        this.selectedIds = []
+
+        if (this.option.isMultiSelect) {
+            this.table = this.initializeDataTable()
+            this.bindEvents()
+        } else {
+            this.table = this.initializeDefaultDataTable()
+        }
+
+        setTimeout(() => { this.jqElement.addClass('showed') }, 100)
+    }
+
+    initializeDataTable() {
+        var table = this.jqElement.DataTable({
+            order: [],
+            columnDefs: [{ orderable: false, targets: 0 }],
+            paging: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            lengthChange: false,
+            pageLength: 7
+        })
+
+        return table
+    }
+
+    initializeDefaultDataTable() {
+        var table = this.jqElement.DataTable({
+            paging: true,
+            searching: true,
+            ordering: false,
+            info: true,
+            lengthChange: false,
+            pageLength: 5
+        })
+
+        return table
+    }
+
+    bindEvents() {
+        this.jqElement.find('#select-all').on('click', () => {
+            const rows = this.table.rows({ 'search': 'applied' }).nodes()
+            const isChecked = this.jqElement.find('#select-all').is(':checked')
+
+            this.toggleRowCheckboxes(rows, isChecked)
+            this.updateHiddenInput()
+        })
+
+        this.jqElement.find('tbody').on('change', '.row-checkbox', (event) => {
+            const id = $(event.currentTarget).val()
+            if (event.currentTarget.checked) {
+                this.addIdToSelected(id)
+            } else {
+                this.removeIdFromSelected(id)
+            }
+
+            const rows = this.table.rows({ 'search': 'applied' }).nodes()
+            this.updateSelectAllState(rows)
+            this.updateHiddenInput()
+        })
+
+        this.table.on('draw', () => {
+            const rows = this.table.rows({ 'search': 'applied' }).nodes()
+
+            $('input[type="checkbox"]', rows).each((_, checkbox) => {
+                $(checkbox).prop('checked', this.selectedIds.includes($(checkbox).val()))
+            })
+
+            this.updateSelectAllState(rows)
+            this.updateHiddenInput()
+        })
+    }
+
+    updateHiddenInput() {
+        $('#selected-ids').val(JSON.stringify(this.selectedIds))
+    }
+
+    addIdToSelected(id) {
+        if (!this.selectedIds.includes(id)) {
+            this.selectedIds.push(id)
+        }
+    }
+
+    removeIdFromSelected(id) {
+        this.selectedIds = this.selectedIds.filter(selectedId => selectedId !== id)
+    }
+
+    toggleRowCheckboxes(rows, isChecked) {
+        $('input[type="checkbox"]', rows).prop('checked', isChecked)
+        $('input[type="checkbox"]', rows).each((_, checkbox) => {
+            const id = $(checkbox).val()
+            
+            if (isChecked) {
+                this.addIdToSelected(id)
+            } else {
+                this.removeIdFromSelected(id)
+            }
+        })
+    }
+
+    updateSelectAllState(rows) {
+        const allChecked = $('input[type="checkbox"]', rows).length === $('input[type="checkbox"]:checked', rows).length
+        this.jqElement.find('#select-all').prop('checked', allChecked)
+    }
+}
+
 // Assign
 const queryEditText = document.querySelectorAll(".edit-text");
 if (queryEditText) {
@@ -433,21 +554,6 @@ if (queryFormShare) {
         new ElementForm(element, {isUserInput: true});
     });
 }
-
-const queryDataTable = document.querySelectorAll(".datatable");
-if (queryDataTable) {
-    queryDataTable.forEach(table => {
-        const datatable = new simpleDatatables.DataTable(table, {
-            perPage: 7,
-            perPageSelect: false
-        })
-
-        datatable.on('datatable.init', function() {
-            table.style.display = 'table'
-        });
-    })
-}
-
 
 function generateIncrementNumber() {
     globalCounter += 1

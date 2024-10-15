@@ -71,7 +71,7 @@
                     </div>
 
                     <!-- Table with stripped rows -->
-                    <table class="table datatable datatable-stream">
+                    <table class="table datatable datatable-stream" id="table-user">
                         <thead>
                             <tr>
                                 <th scope="col">Username</th>
@@ -131,6 +131,13 @@
     </main>
 
     @include('component.footerbody')
+
+    <script>
+        const dataTable = $('#table-user')
+        if (dataTable) {
+            new ElementDataTable(dataTable)
+        }
+    </script>
 </body>
 
 </html>

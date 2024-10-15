@@ -32,12 +32,23 @@
                     </div>
 
                     <div class="mb-3">
+                        <form action="{{ url("/form/data/$uuid")}}" method="POST" id="action-data-form">
+                            @csrf
+                            <input type="hidden" id="selected-ids" name="selected_ids" value="">
+                        </form>
+
+                        <!-- Export CSV -->
+                        <button onclick="sendFormAction('action-data-form', 'export', 'csv')" class="btn btn-success">Export to CSV</button>
                     </div>
 
+
                     <!-- Table with stripped rows -->
-                    <table class="table datatable datatable-stream table-striped table-hover">
+                    <table class="table datatable datatable-stream table-striped table-hover" id="table-form-data">
                         <thead>
                             <tr>
+                                <th scope="col" class="no-sort">
+                                    <input type="checkbox" id="select-all">
+                                </th>
                                 @foreach ($label_list as $label)
                                     <th scope="col">{{$label}}</th>
                                 @endforeach
@@ -46,11 +57,14 @@
                         <tbody>
                             @foreach ($dump_list as $dump)
                                 <tr>
+                                    <td>
+                                        <input type="checkbox" class="row-checkbox" value="{{ $dump['id'] }}">
+                                    </td>
                                     @foreach ($dump['data_list'] as $data)
                                         <td>
                                             @if ($data['type'] == 'presence')
                                                 @if ($data['value'] == 0)
-                                                    <span class="badge bg-danger">tidak hadir</span>
+                                                    <span class="badge bg-danger">tidak ada</span>
                                                 @else
                                                     <span class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#calendar-data-{{ $dump['id'] }}">hadir {{ $data['value'] }}x</span>
                                                 @endif
@@ -103,6 +117,13 @@
     </main>
 
     @include('component.footerbody')
+
+    <script>
+        const dataTable = $('#table-form-data')
+        if (dataTable) {
+            new ElementDataTable(dataTable, {isMultiSelect: true})
+        }
+    </script>
 </body>
 
 </html>

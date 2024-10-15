@@ -72,7 +72,8 @@ class Template extends Model
         return $template;
     }
 
-    static function allDumpData($uuid_template) {
+    static function allDumpData($uuid_template, $selectedIds = null)
+    {
         // Get Template
         $template = self::where('uuid', $uuid_template)->first();
         if (!$template) {
@@ -85,28 +86,36 @@ class Template extends Model
         $dumpList = [];
 
         // Function to insert data into lists
-        $insertData = function(&$dataList, &$labelList, $data) {
+        $insertData = function (&$dataList, &$labelList, $data) {
             if (!in_array($data['label'], $labelList)) {
                 $labelList[] = $data['label'];
             }
             $dataList[] = $data;
         };
 
+        // Prepare the query for fetching dumps
+        $dumpQuery = Dump::where('id_template', $template->id);
+
+        // If selectedIds is provided, filter the dumps
+        if ($selectedIds) {
+            $dumpQuery->whereIn('id', $selectedIds);
+        }
+
         // Fetch dumps with chunking
-        Dump::where('id_template', $template->id)->chunk(100, function($dumps) use (&$labelList, &$sectionCache, &$dumpList, $insertData) {
+        $dumpQuery->chunk(100, function ($dumps) use (&$labelList, &$sectionCache, &$dumpList, $insertData) {
             foreach ($dumps as $dump) {
                 $dataListDB = Data::select('id', 'id_section', 'value')->where('id_dump', $dump->id)->get();
                 $dataList = [];
-                
+
                 // Process data
                 foreach ($dataListDB as $data) {
                     $sectionId = $data->id_section;
-                    
+
                     // Cache Section data
                     if (!isset($sectionCache[$sectionId])) {
                         $sectionCache[$sectionId] = Section::select('label', 'type')->find($sectionId);
                     }
-                    
+
                     $section = $sectionCache[$sectionId];
                     if ($section) {
                         // Merge data
