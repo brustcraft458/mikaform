@@ -9,6 +9,7 @@ use App\Models\Template;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FormDataController extends Controller
 {
@@ -23,6 +24,7 @@ class FormDataController extends Controller
         }
 
         return view('form.data', [
+            'uuid' => $template['uuid'],
             'label_list' => $template['label_list'],
             'dump_list' => $template['dump_list']
         ]);
@@ -135,5 +137,57 @@ class FormDataController extends Controller
 
         session()->flash('action_message', 'form_input_success');
         return redirect()->route('form_share', ['uuid'=> $uuid]);
+    }
+
+    function handleData(Request $request, $uuid) {
+        // Proccess
+        if ($request->has('export') && $request->has('selected_ids')) {
+            if ($request->input('export') === 'csv') {
+                return $this->exportCsv($request, $uuid);
+            }
+        }
+
+        return response('', 400);
+    }
+
+    public function exportCsv($request, $uuid)
+    {
+        $selectedIds = json_decode($request->input('selected_ids'), true);
+
+        // Template
+        $template = Template::allDumpData($uuid, $selectedIds);
+        
+        // Init
+        $dumps = $template->dump_list;
+        $filename = Str::slug($template['title'], '_') . "_data.csv";
+
+        // Generate CSV
+        $response = new StreamedResponse(function () use ($template, $dumps) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, array_merge(['NO'], $template['label_list']));
+
+            // Loop dumps
+            $count = 0;
+            foreach ($dumps as $dump) {
+                // Init
+                $count++;
+                $row = [$count];
+            
+                // Collect 'value'
+                $row = array_merge($row, array_column($dump->data_list, 'value'));
+            
+                // Write CSV
+                fputcsv($handle, $row);
+            }
+
+
+            fclose($handle);
+        });
+
+        // Headers response
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
+
+        return $response;
     }
 }

@@ -32,10 +32,15 @@
                     </div>
 
                     <div class="mb-3">
+                        <form action="{{ url("/form/data/$uuid")}}" method="POST" id="action-data-form">
+                            @csrf
+                            <input type="hidden" id="selected-ids" name="selected_ids" value="">
+                        </form>
+
+                        <!-- Export CSV -->
+                        <button onclick="sendFormAction('action-data-form', 'export', 'csv')" class="btn btn-success">Export to CSV</button>
                     </div>
 
-                    <!-- hdiee -->
-                    <input type="hidden" id="selected-ids" name="selected_ids" value="">
 
                     <!-- Table with stripped rows -->
                     <table class="table datatable datatable-stream table-striped table-hover" id="table-form-data">
@@ -59,7 +64,7 @@
                                         <td>
                                             @if ($data['type'] == 'presence')
                                                 @if ($data['value'] == 0)
-                                                    <span class="badge bg-danger">tidak hadir</span>
+                                                    <span class="badge bg-danger">tidak ada</span>
                                                 @else
                                                     <span class="badge bg-primary" data-bs-toggle="modal" data-bs-target="#calendar-data-{{ $dump['id'] }}">hadir {{ $data['value'] }}x</span>
                                                 @endif
