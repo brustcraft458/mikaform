@@ -101,7 +101,8 @@ class RegisterController extends Controller
             'Authorization' => env('WA_GATEWAY_KEY')
         ])->post($waurl, [
             'phone' => $user['phone'],
-            'text' => 'Your OTP code is: ' . $otp
+            'text' => 'Your OTP code is: ' . $otp,
+            'type' => 'whatsapp'
         ]);
 
         // Cek respons dari API bot WhatsApp

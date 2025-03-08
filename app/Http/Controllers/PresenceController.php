@@ -80,7 +80,8 @@ class PresenceController extends Controller
             $text = "Silahkan Melakukan Presensi\n*'" . $template['title'] . "'*\nmenggunakan link dibawah ini\n" . $urlpath;
             array_push($message_list, [
                 'phone' => $phone,
-                'text' => $text
+                'text' => $text,
+                'type' => 'whatsapp'
             ]);
         }
 
