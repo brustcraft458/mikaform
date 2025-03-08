@@ -14,12 +14,13 @@ use Illuminate\Support\Facades\Http;
 class PresenceController extends Controller
 {
     function webPresence($uuid) {
-        $presence = Presence::where('uuid', $uuid)->first();
+        $presence = Presence::select('id', 'uuid', 'presence_at')->where('uuid', $uuid)->first();
         if (!$presence) {
             return redirect()->route('landing');
         }
+        $presence = $presence->toArray();
 
-        return view('presence.qrgenerate', ['type' => 'presence', 'uuid' => $uuid]);
+        return view('presence.qrgenerate', ['type' => 'presence', 'uuid' => $presence['uuid'], 'presence_at' => $presence['presence_at']]);
     }
 
     function webScanner($uuid) {
@@ -43,6 +44,8 @@ class PresenceController extends Controller
             return $this->generatePresence($uuid);
         } elseif ($request->has('presence_input')) {
             return $this->inputPresence($request, $uuid);
+        } elseif ($request->has('presence_admin_input')) {
+            return $this->inputPresence($request, $uuid, ['admin_input' => true]);
         }
 
         return response(400);
@@ -80,7 +83,8 @@ class PresenceController extends Controller
             $text = "Silahkan Melakukan Presensi\n*'" . $template['title'] . "'*\nmenggunakan link dibawah ini\n" . $urlpath;
             array_push($message_list, [
                 'phone' => $phone,
-                'text' => $text
+                'text' => $text,
+                'type' => 'whatsapp'
             ]);
         }
 
@@ -95,7 +99,7 @@ class PresenceController extends Controller
         return redirect()->route('presence_scanner', ['uuid' => $uuid]);
     }
 
-    function inputPresence($request, $uuid) {
+    function inputPresence($request, $uuid, $option = []) {
         $validator = Validator::make($request->all(), [
             'type' => 'required|in:presence',
             'uuid' => 'required|uuid'
@@ -110,22 +114,43 @@ class PresenceController extends Controller
 
         $input = $validator->validated();
 
-        // Get Template
-        $template = Template::where('uuid', $uuid)->first();
-        if (!$template) {
-            return response()->json([
-                'message' => 'presence_input_notfound_failed',
-                'data' => ['template_uuid' => $uuid, 'state' => 'template_not_found']
-            ], 404);
-        }
+        // Find Missing Template
+        if (isset($option['admin_input'])) {
+            // Get Presence
+            $presence = Presence::where('uuid', $input['uuid'])->first();
+            if (!$presence) {
+                return response()->json([
+                    'message' => 'presence_input_notfound_failed',
+                    'data' => ['presence_uuid' => null, 'state' => 'presence_not_found']
+                ], 404);
+            }
 
-        // Get Presence
-        $presence = Presence::where('uuid', $input['uuid'])->where('id_template', $template['id'])->first();
-        if (!$presence) {
-            return response()->json([
-                'message' => 'presence_input_notfound_failed',
-                'data' => ['presence_uuid' => $input['uuid'], 'state' => 'presence_not_found']
-            ], 404);
+            // Find Template
+            $template = Template::where('id', $presence['id_template'])->first();
+            if (!$template) {
+                return response()->json([
+                    'message' => 'presence_input_notfound_failed',
+                    'data' => ['template_uuid' => null, 'state' => 'template_not_found']
+                ], 404);
+            }
+        } else {
+            // Get Template
+            $template = Template::where('uuid', $uuid)->first();
+            if (!$template) {
+                return response()->json([
+                    'message' => 'presence_input_notfound_failed',
+                    'data' => ['template_uuid' => $uuid, 'state' => 'template_not_found']
+                ], 404);
+            }
+
+            // Get Presence
+            $presence = Presence::where('uuid', $input['uuid'])->where('id_template', $template['id'])->first();
+            if (!$presence) {
+                return response()->json([
+                    'message' => 'presence_input_notfound_failed',
+                    'data' => ['presence_uuid' => $input['uuid'], 'state' => 'presence_not_found']
+                ], 404);
+            }
         }
 
         if (!is_null($presence['presence_at'])) {

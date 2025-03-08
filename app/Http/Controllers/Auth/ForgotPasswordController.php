@@ -50,7 +50,8 @@ class ForgotPasswordController extends Controller
             'Authorization' => 'Bearer ' . env('WA_GATEWAY_KEY')
         ])->post($waurl, [
             'phone' => $user->phone,
-            'text' => 'Kode OTP Anda adalah: ' . $otp
+            'text' => 'Kode OTP Anda adalah: ' . $otp,
+            'type' => 'whatsapp'
         ]);
 
         // Cek respons dari API bot WhatsApp

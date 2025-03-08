@@ -168,7 +168,8 @@ class FormTemplateController extends Controller
             $text = "Pesan dari\n*'" . $template['title'] . "'*\n\n" . $input['message'];
             array_push($message_list, [
                 'phone' => $phone,
-                'text' => $text
+                'text' => $text,
+                'type' => 'whatsapp'
             ]);
             
         }
