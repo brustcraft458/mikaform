@@ -25,6 +25,10 @@ class FormDataImport implements ToModel, WithHeadingRow
         // Cari atau buat Dump baru
         $dump = Dump::create(['id_template' => $template['id']]);
 
+        // Count
+        $template->increment('total_respondent');
+        $template->increment('total_viewed');
+
         // All Section
         $sectionAll = Section::where('id_template', $template['id'])->get()->toArray(); 
         //return var_dump($row);
